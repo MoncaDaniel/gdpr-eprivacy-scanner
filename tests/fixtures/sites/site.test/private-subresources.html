@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Private sub-resources fixture</title></head>
+<body>
+  <!-- An attacker-controlled page probing internal addresses. -->
+  <img src="http://10.0.0.1/internal.gif" alt="">
+  <img src="http://169.254.169.254/computeMetadata/v1/" alt="">
+  <img src="http://tracker.test:{{PORT}}/pixel.gif?ok=1" alt="">
+  <script>
+    try { new WebSocket("ws://192.168.1.1/socket"); } catch (e) {}
+  </script>
+</body>
+</html>

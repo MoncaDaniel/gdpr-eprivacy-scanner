@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Tracking before consent fixture</title>
+  <script>
+    // Analytics-style first-party cookie set by script, 2-year lifetime.
+    document.cookie = "_ga=GA1.1.123456789.1700000000; max-age=63072000; path=/";
+    // A cookie that is set and then deleted: storing still happened.
+    document.cookie = "_ephemeral=1; max-age=3600; path=/";
+    setTimeout(() => { document.cookie = "_ephemeral=; max-age=0; path=/"; }, 600);
+    localStorage.setItem("_pk_id", "visitor-identifier-0001");
+    sessionStorage.setItem("ab_bucket", "B");
+  </script>
+</head>
+<body>
+  <h1>Tracking fixture</h1>
+  <!-- Third-party pixel fired on load, before any interaction. -->
+  <img src="http://tracker.test:{{PORT}}/pixel.gif?uid=abc123&ev=pageview" width="1" height="1" alt="">
+  <!-- Third-party iframe that writes its own storage. -->
+  <iframe src="http://widget.test:{{PORT}}/widget.html" title="widget"></iframe>
+  <div id="consent-banner" style="position:fixed;bottom:0;left:0;right:0;padding:16px;background:#fff;border-top:1px solid #ccc">
+    Nous utilisons des cookies. <button>Tout accepter</button> <button>Tout refuser</button>
+  </div>
+  <script>
+    // Deferred tag: injected after load, as tag managers do.
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        const s = document.createElement("script");
+        s.src = "http://tracker.test:{{PORT}}/late.js";
+        document.head.appendChild(s);
+      }, 400);
+    });
+  </script>
+</body>
+</html>

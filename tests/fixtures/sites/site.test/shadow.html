@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="utf-8"><title>Shadow DOM banner fixture</title></head>
+<body>
+  <consent-banner></consent-banner>
+  <script>
+    // Several consent platforms render inside an open shadow root.
+    customElements.define("consent-banner", class extends HTMLElement {
+      connectedCallback() {
+        const root = this.attachShadow({ mode: "open" });
+        root.innerHTML = '<div class="cmp">Vos choix <button id="reject">Continuer sans accepter</button></div>';
+      }
+    });
+  </script>
+</body>
+</html>
