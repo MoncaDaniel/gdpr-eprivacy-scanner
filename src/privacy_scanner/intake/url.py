@@ -99,9 +99,15 @@ def canonical_host(hostname: str) -> str:
 
     if ":" in host:  # IPv6 literal (brackets already stripped)
         try:
-            return str(ipaddress.IPv6Address(host.split("%", 1)[0]))
+            ip = ipaddress.IPv6Address(host.split("%", 1)[0])
         except ValueError as exc:
             raise InvalidUrlError(f"Invalid IPv6 address '{host}'") from exc
+        # str() of an IPv4-mapped address changed within 3.12.x patch releases
+        # (hex vs dotted tail); spell it explicitly so the canonical form, which
+        # keys egress-log lookups, does not depend on the interpreter build.
+        if ip.ipv4_mapped is not None:
+            return f"::ffff:{ip.ipv4_mapped}"
+        return str(ip)
 
     labels = host.split(".")
     if _NUMERIC_LABEL_RE.match(labels[-1]):

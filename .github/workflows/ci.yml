@@ -8,6 +8,11 @@ on:
 permissions:
   contents: read
 
+env:
+  # Use uv's managed CPython (same builds as local dev), not the runner's
+  # system interpreter, so stdlib behaviour matches across environments.
+  UV_PYTHON_PREFERENCE: only-managed
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
