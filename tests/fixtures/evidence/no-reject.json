@@ -1,0 +1,171 @@
+{
+  "schema_version": "1.1.0",
+  "scan_id": "golden-no-reject",
+  "scanner_version": "0.1.0",
+  "created_at": "2026-10-16T16:31:23.786237Z",
+  "target": {
+    "input_url": "http://site.test:40693/no-reject.html",
+    "normalized_url": "http://site.test:40693/no-reject.html"
+  },
+  "environment": {
+    "engine": "chromium",
+    "engine_version": "153.0.8010.12",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36",
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "locale": "fr-FR",
+    "timezone": "Europe/Paris",
+    "accept_language": "fr-FR,fr;q=0.9,en;q=0.8",
+    "headless": true,
+    "vantage_point": "test:loopback"
+  },
+  "sessions": [
+    {
+      "kind": "S0_baseline",
+      "outcome": "completed",
+      "started_at": "2026-10-16T16:31:24.162289Z",
+      "duration_ms": 2087,
+      "observation_window_ms": 2005,
+      "error": null,
+      "navigation": {
+        "requested_url": "http://site.test:40693/no-reject.html",
+        "final_url": "http://site.test:40693/no-reject.html",
+        "status": 200,
+        "redirect_chain": [],
+        "page_title": "No reject on first layer fixture",
+        "dom_content_loaded_ms": 28,
+        "load_ms": 29,
+        "network_idle_reached": true
+      },
+      "obstruction": null,
+      "cookies": [
+        {
+          "name": "_fbp",
+          "domain": "site.test",
+          "path": "/",
+          "value": {
+            "length": 19,
+            "digest": "33fadfe1048b8100"
+          },
+          "expires_at": "2027-01-14T16:31:24.243955Z",
+          "lifetime_seconds": 7775998,
+          "http_only": false,
+          "secure": false,
+          "same_site": "Lax",
+          "first_observed_ms": 264
+        }
+      ],
+      "requests": [
+        {
+          "sequence": 0,
+          "url": "http://site.test:40693/no-reject.html",
+          "method": "GET",
+          "resource_type": "document",
+          "started_ms": 9,
+          "frame_url": "about:blank",
+          "is_navigation": true,
+          "redirected_from": null,
+          "status": 200,
+          "server_ip": "127.0.0.1",
+          "failure": null,
+          "blocked_by": null,
+          "url_truncated": false
+        }
+      ],
+      "requests_dropped": 0,
+      "storage": [],
+      "frames": [
+        {
+          "url": "http://site.test:40693/no-reject.html",
+          "name": "",
+          "is_main": true,
+          "dom": {
+            "path": "s0_baseline/dom/frame-00.html",
+            "media_type": "text/html; charset=utf-8",
+            "sha256": "fde1f2a937e13de3caf826a0bd100b615956110af9cda607ca15797e2f7bc6e4",
+            "size_bytes": 679
+          },
+          "dom_truncated": false
+        }
+      ],
+      "screenshot": {
+        "path": "s0_baseline/screenshot.png",
+        "media_type": "image/png",
+        "sha256": "0505f0ae6b9bb032f99ac877ffc3bfa95fbf2453aa4408010d614560ae1c1dec",
+        "size_bytes": 13558
+      },
+      "guard_violations": [],
+      "consent_ui": [
+        {
+          "frame_index": 0,
+          "frame_url": "http://site.test:40693/no-reject.html",
+          "is_main": true,
+          "viewport": {
+            "width": 1366,
+            "height": 768
+          },
+          "layers": [
+            {
+              "layer_id": 0,
+              "kind": "fixed",
+              "element": "div.cookie-banner",
+              "box": {
+                "x": 0.0,
+                "y": 715.0,
+                "width": 1366.0,
+                "height": 53.0
+              },
+              "z_index": null,
+              "text": "Nous utilisons des cookies pour améliorer votre expérience. Accepter & fermer Paramétrer",
+              "text_truncated": false
+            }
+          ],
+          "controls": [
+            {
+              "layer_id": 0,
+              "tag": "button",
+              "role": null,
+              "label": "Accepter & fermer",
+              "aria_label": null,
+              "box": {
+                "x": 499.0,
+                "y": 731.0,
+                "width": 135.0,
+                "height": 21.0
+              },
+              "in_viewport": true,
+              "font_size_px": 13.3333,
+              "font_weight": 400,
+              "color": "rgb(0, 0, 0)",
+              "background_color": "rgb(239, 239, 239)",
+              "in_shadow_root": false
+            },
+            {
+              "layer_id": 0,
+              "tag": "a",
+              "role": null,
+              "label": "Paramétrer",
+              "aria_label": null,
+              "box": {
+                "x": 639.0,
+                "y": 731.0,
+                "width": 92.0,
+                "height": 19.0
+              },
+              "in_viewport": true,
+              "font_size_px": 16.0,
+              "font_weight": 400,
+              "color": "rgb(0, 0, 238)",
+              "background_color": "rgb(255, 255, 255)",
+              "in_shadow_root": false
+            }
+          ],
+          "other_controls": 0,
+          "truncated": false
+        }
+      ]
+    }
+  ]
+}

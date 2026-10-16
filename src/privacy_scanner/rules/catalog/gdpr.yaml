@@ -1,0 +1,127 @@
+# GDPR rules (design review §2.2). Privacy-notice checks arrive in Phase 3;
+# until then they are catalogued as planned and counted in coverage, so the
+# report never suggests GDPR was assessed when it was not.
+
+regulation: gdpr
+title: GDPR
+
+rules:
+  - id: GD-01
+    title: Privacy notice reachable from the entry page
+    tier: A
+    severity: high
+    status: planned
+    planned_phase: 3
+    version: 1.0.0
+    legal_basis:
+      - {instrument: gdpr, provision: Art. 12(1) and Art. 13}
+  - id: GD-02
+    title: Controller identity and contact details mentioned
+    tier: B
+    severity: medium
+    status: planned
+    planned_phase: 3
+    version: 1.0.0
+    legal_basis:
+      - {instrument: gdpr, provision: Art. 13(1)(a)}
+  - id: GD-03
+    title: Data protection officer contact mentioned
+    tier: B
+    severity: low
+    status: planned
+    planned_phase: 3
+    version: 1.0.0
+    legal_basis:
+      - {instrument: gdpr, provision: Art. 13(1)(b) and Art. 37}
+  - id: GD-04
+    title: Purposes and legal bases mentioned
+    tier: B
+    severity: medium
+    status: planned
+    planned_phase: 3
+    version: 1.0.0
+    legal_basis:
+      - {instrument: gdpr, provision: Art. 13(1)(c) and Art. 6}
+  - id: GD-05
+    title: Recipients or categories of recipients mentioned
+    tier: B
+    severity: low
+    status: planned
+    planned_phase: 3
+    version: 1.0.0
+    legal_basis:
+      - {instrument: gdpr, provision: Art. 13(1)(e)}
+  - id: GD-06
+    title: International transfers mentioned
+    tier: B
+    severity: medium
+    status: planned
+    planned_phase: 3
+    version: 1.0.0
+    legal_basis:
+      - {instrument: gdpr, provision: Art. 13(1)(f)}
+  - id: GD-07
+    title: Retention period or criteria mentioned
+    tier: B
+    severity: low
+    status: planned
+    planned_phase: 3
+    version: 1.0.0
+    legal_basis:
+      - {instrument: gdpr, provision: Art. 13(2)(a)}
+  - id: GD-08
+    title: Data subject rights listed
+    tier: B
+    severity: medium
+    status: planned
+    planned_phase: 3
+    version: 1.0.0
+    legal_basis:
+      - {instrument: gdpr, provision: Art. 13(2)(b) and Arts. 15-21}
+  - id: GD-09
+    title: Right to withdraw consent mentioned
+    tier: B
+    severity: low
+    status: planned
+    planned_phase: 3
+    version: 1.0.0
+    legal_basis:
+      - {instrument: gdpr, provision: Art. 13(2)(c)}
+  - id: GD-10
+    title: Right to lodge a complaint with a supervisory authority mentioned
+    tier: B
+    severity: low
+    status: planned
+    planned_phase: 3
+    version: 1.0.0
+    legal_basis:
+      - {instrument: gdpr, provision: Art. 13(2)(d)}
+  - id: GD-11
+    title: Site served over HTTPS; forms not submitted over HTTP
+    tier: A
+    severity: medium
+    status: planned
+    planned_phase: 3
+    version: 1.0.0
+    legal_basis:
+      - {instrument: gdpr, provision: Art. 5(1)(f) and Art. 32}
+  - id: GD-12
+    title: No pre-ticked marketing consent boxes in forms
+    tier: B
+    severity: medium
+    status: planned
+    planned_phase: 3
+    version: 1.0.0
+    legal_basis:
+      - {instrument: gdpr, provision: Art. 4(11), Art. 7 and Recital 32}
+    guidance:
+      - {ref: cjeu_planet49}
+  - id: GD-13
+    title: Third-party requests to providers established outside the EEA
+    tier: M
+    severity: low
+    status: planned
+    planned_phase: 3
+    version: 1.0.0
+    legal_basis:
+      - {instrument: gdpr, provision: Arts. 44-46}

@@ -1,0 +1,265 @@
+# ePrivacy Directive rules (design review §2.2, ADR-0006).
+#
+# status:   automated  - a check function produces the verdict
+#           manual     - Tier M: always "Review suggested" with review_prompt
+#           planned    - not evaluated by this scanner version (planned_phase)
+# tier:     A deterministic | B heuristic (low-confidence FAIL becomes review) | M manual
+# explanations: one template per outcome; {placeholders} are filled by the
+#           check. Wording rule: describe what was observed and what the
+#           provision requires; never call the site lawful or unlawful.
+
+regulation: eprivacy
+title: ePrivacy Directive
+
+rules:
+  - id: EP-01
+    title: No non-essential cookies before consent
+    tier: A
+    severity: high
+    status: automated
+    check: cookies_before_consent
+    version: 1.0.0
+    legal_basis:
+      - {instrument: eprivacy, provision: Art. 5(3)}
+    guidance:
+      - {ref: edpb_g_2_2023}
+      - {ref: cjeu_planet49}
+      - {ref: wp29_opinion_04_2012}
+      - {ref: edpb_cookie_banner_taskforce, pinpoint: "§8, paras 26-30 (cookies inaccurately classified as essential)"}
+    explanations:
+      pass: >-
+        No cookie classified as analytics, marketing or otherwise requiring
+        consent was stored while the page was observed ({window} after loading,
+        with no interaction). {exempt_summary}
+      fail: >-
+        {count} cookie(s) classified as requiring consent were stored before any
+        interaction with the page: {items}. Art. 5(3) requires prior consent for
+        storing information on the visitor's device unless it is strictly
+        necessary for a service the visitor requested.
+      manual_review: >-
+        No cookie known to require consent was found, but {count} cookie(s)
+        stored before any interaction could not be confirmed as exempt: {items}.
+        Their purpose has to be checked before drawing a conclusion.
+    remediation_hint: >-
+      Load analytics and advertising tags only after the visitor accepts them
+      (for example through the consent platform's blocking mode or consent mode),
+      and document the purpose of each remaining cookie.
+
+  - id: EP-02
+    title: No third-party tracking requests before consent
+    tier: A
+    severity: high
+    status: automated
+    check: tracking_requests_before_consent
+    version: 1.0.0
+    legal_basis:
+      - {instrument: eprivacy, provision: Art. 5(3)}
+    guidance:
+      - {ref: edpb_g_2_2023, pinpoint: "§3.1 (URL and pixel tracking)"}
+    explanations:
+      pass: >-
+        No request to a known analytics or advertising service, and no
+        unclassified beacon-like request, was observed before any interaction.
+        {other_summary}
+      fail: >-
+        {count} known tracking service(s) were contacted before any interaction
+        with the page: {items}. The EDPB considers that sending information
+        from the device through tracking pixels and URLs falls within Art. 5(3)
+        and requires prior consent unless an exemption applies.
+      manual_review: >-
+        No known tracking service was contacted, but {count} third-party
+        site(s) received requests before any interaction that may be tracking:
+        {items}. Whether consent was required depends on what they collect.
+    remediation_hint: >-
+      Defer third-party pixels, beacons and tags until consent is given, or
+      document why each remaining third-party request is strictly necessary.
+
+  - id: EP-03
+    title: No known tracker identifiers in Web Storage before consent
+    tier: B
+    severity: medium
+    status: automated
+    check: storage_before_consent
+    version: 1.0.0
+    legal_basis:
+      - {instrument: eprivacy, provision: Art. 5(3)}
+    guidance:
+      - {ref: edpb_g_2_2023}
+    explanations:
+      pass: >-
+        No localStorage or sessionStorage key associated with analytics or
+        advertising was written before any interaction. {other_summary}
+      fail: >-
+        {count} Web Storage key(s) associated with analytics or advertising were
+        written before any interaction: {items}. Art. 5(3) applies to any
+        storage on the device, not only to cookies.
+      manual_review: >-
+        {count} Web Storage key(s) written before any interaction look like
+        identifiers or come from third parties and could not be classified:
+        {items}. Their purpose has to be checked.
+    remediation_hint: >-
+      Make scripts that write identifiers to localStorage or sessionStorage
+      wait for consent, like cookie-setting scripts.
+
+  - id: EP-04
+    title: Consent mechanism present when trackers are used
+    tier: A
+    severity: high
+    status: automated
+    check: consent_mechanism_present
+    version: 1.0.0
+    legal_basis:
+      - {instrument: eprivacy, provision: Art. 5(3)}
+      - {instrument: gdpr, provision: Art. 4(11) and Art. 7}
+    guidance:
+      - {ref: edpb_cookie_banner_taskforce, pinpoint: "§3, para 7"}
+    explanations:
+      pass: >-
+        A consent interface was detected on the page ({banner}).
+      fail: >-
+        Trackers requiring consent were observed ({trackers}), but no consent
+        interface was detected on the first screen. Consent under Art. 5(3) has
+        to be obtained before such trackers are used.
+      manual_review: >-
+        {detail}
+      not_applicable: >-
+        No tracker requiring consent was observed and no consent interface was
+        detected. A consent banner is only needed when non-exempt trackers are
+        used, so its absence is not an issue in itself. Trackers that only load
+        after an interaction would not have been observed.
+    remediation_hint: >-
+      Show a consent interface before any non-exempt tracker is used, or remove
+      the trackers.
+
+  - id: EP-05
+    title: Reject option on the first layer of the banner
+    tier: B
+    severity: medium
+    status: automated
+    check: reject_on_first_layer
+    version: 1.0.0
+    legal_basis:
+      - {instrument: eprivacy, provision: Art. 5(3)}
+      - {instrument: gdpr, provision: Art. 4(11) and Art. 7}
+    guidance:
+      - {ref: edpb_cookie_banner_taskforce, pinpoint: "§3, paras 6-8 (Type A: no reject button on the first layer)"}
+      - {ref: cnil_recommendation_2020_092, pinpoint: "§2.3 (refusal as easy as consent, same screen)"}
+      - {ref: conseil_etat_2026_501417}
+    explanations:
+      pass: >-
+        The first layer of the consent interface offers a refusal option
+        ({reject}) alongside acceptance ({accept}).
+      fail: >-
+        The first layer of the consent interface offers acceptance ({accept})
+        but no refusal option was found; other controls: {others}. The CNIL
+        strongly recommends that refusing be possible on the same screen and as
+        easily as accepting, and most authorities in the EDPB Cookie Banner
+        Taskforce considered a banner with no refusal option on any layer to
+        be an infringement.
+      manual_review: >-
+        {detail}
+      not_applicable: >-
+        {detail}
+    remediation_hint: >-
+      Add a "Tout refuser" / "Reject all" button (or a clearly labelled
+      "Continuer sans accepter" link) to the first layer, next to the accept button.
+
+  - id: EP-06
+    title: Reject comparable in prominence to accept
+    tier: B
+    severity: medium
+    status: planned
+    planned_phase: 3
+    version: 1.0.0
+    legal_basis:
+      - {instrument: eprivacy, provision: Art. 5(3)}
+      - {instrument: gdpr, provision: Art. 4(11) and Art. 7(3)}
+    guidance:
+      - {ref: edpb_cookie_banner_taskforce, pinpoint: "§6, paras 15-19 (deceptive button colours and contrast)"}
+      - {ref: cnil_recommendation_2020_092, pinpoint: "§2.3"}
+      - {ref: cnil_san_2021_023_024}
+
+  - id: EP-07
+    title: Refusal honoured (no trackers after reject)
+    tier: A
+    severity: high
+    status: planned
+    planned_phase: 3
+    version: 1.0.0
+    legal_basis:
+      - {instrument: eprivacy, provision: Art. 5(3)}
+
+  - id: EP-08
+    title: Persistent way to withdraw or change consent
+    tier: B
+    severity: low
+    status: planned
+    planned_phase: 3
+    version: 1.0.0
+    legal_basis:
+      - {instrument: gdpr, provision: Art. 7(3)}
+    guidance:
+      - {ref: edpb_cookie_banner_taskforce, pinpoint: "§9, paras 31-32 (no withdraw icon)"}
+      - {ref: cnil_recommendation_2020_092, pinpoint: "§3"}
+
+  - id: EP-09
+    title: Audience-measurement cookie lifetime within 13 months
+    tier: A
+    severity: low
+    status: automated
+    check: analytics_cookie_lifetime
+    version: 1.0.0
+    legal_basis:
+      - {instrument: eprivacy, provision: Art. 5(3)}
+      - {instrument: gdpr, provision: Art. 5(1)(e)}
+    guidance:
+      - {ref: cnil_recommendation_2020_092, pinpoint: "§5 (audience-measurement trackers: lifetime such as thirteen months)"}
+      - {ref: cnil_audience_measurement}
+      - {ref: cnil_guidelines_2020_091, pinpoint: "Art. 5 (audience measurement)"}
+    explanations:
+      pass: >-
+        The analytics cookie(s) stored before consent have a lifetime of 13
+        months or less: {items}.
+      fail: >-
+        {count} analytics cookie(s) stored before consent have a lifetime above
+        13 months: {items}. A site relying on the CNIL audience-measurement
+        exemption is expected to limit tracker lifetime, for example to
+        thirteen months (French guidance). {cap_note}
+      not_applicable: >-
+        No analytics cookie was stored before consent, so no
+        audience-measurement lifetime applies to this observation.
+    remediation_hint: >-
+      Configure the analytics tool to cap its cookie lifetime at 13 months and
+      not to extend it on each visit.
+
+  - id: EP-10
+    title: No cookie wall (access conditioned on acceptance)
+    tier: M
+    severity: medium
+    status: manual
+    version: 1.0.0
+    legal_basis:
+      - {instrument: eprivacy, provision: Art. 5(3)}
+      - {instrument: gdpr, provision: Art. 7(4)}
+    guidance:
+      - {ref: conseil_etat_2020_434684}
+    review_prompt: >-
+      Check whether refusing trackers blocks or degrades access to the content.
+      Positions differ between member states (in France, case by case since the
+      Conseil d'État decision of 19 June 2020; other authorities are stricter),
+      so this needs a jurisdiction-specific assessment.
+
+  - id: EP-11
+    title: Granular purposes, no pre-ticked purposes in the second layer
+    tier: M
+    severity: medium
+    status: manual
+    version: 1.0.0
+    legal_basis:
+      - {instrument: gdpr, provision: Art. 4(11) and Recital 32}
+    guidance:
+      - {ref: cjeu_planet49}
+      - {ref: edpb_cookie_banner_taskforce, pinpoint: "§4, paras 9-10 (pre-ticked boxes)"}
+    review_prompt: >-
+      Open the banner's settings layer and check that each purpose can be
+      accepted or refused separately and that no purpose is enabled by default.

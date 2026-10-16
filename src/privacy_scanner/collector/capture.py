@@ -1,4 +1,4 @@
-"""Point-in-time captures of page state: Web Storage, DOM and screenshot.
+"""Point-in-time captures of page state: Web Storage, DOM, consent UI and screenshot.
 
 All captures are read-only: they evaluate script that inspects state but never
 writes storage, dispatches events or scrolls.
@@ -15,12 +15,22 @@ from playwright.async_api import Error, Frame, Page
 
 from privacy_scanner.collector.artifacts import ArtifactStore
 from privacy_scanner.collector.fingerprint import ValueFingerprinter
-from privacy_scanner.domain.evidence import ArtifactRef, FrameRecord, StorageArea, StorageRecord
+from privacy_scanner.domain.evidence import (
+    ArtifactRef,
+    FrameRecord,
+    FrameUi,
+    StorageArea,
+    StorageRecord,
+    UiControl,
+    UiLayer,
+    Viewport,
+)
 
 logger = logging.getLogger(__name__)
 
 MAX_STORAGE_VALUE_CHARS = 65_536
 SCREENSHOT_TIMEOUT_MS = 10_000
+CONSENT_UI_LIMITS = {"maxControls": 300, "maxLayers": 40, "maxText": 2000}
 
 
 @cache
@@ -78,6 +88,45 @@ async def capture_frames(
             )
         )
     return tuple(frames)
+
+
+async def capture_consent_ui(page: Page, *, max_frames: int) -> tuple[FrameUi, ...]:
+    """Visible overlay layers and their controls, per frame (ADR-0012).
+
+    Frame indices match ``capture_frames`` (both enumerate ``page.frames``).
+    Frames that cannot be evaluated or have no viewport (hidden iframes) are
+    skipped; frames with nothing overlay-like are recorded with empty tuples
+    only when they are the main frame, to keep the bundle small.
+    """
+    snapshots: list[FrameUi] = []
+    for index, frame in enumerate(page.frames[:max_frames]):
+        raw = await _evaluate(frame, _script("scan_consent_ui.js"), CONSENT_UI_LIMITS)
+        if not isinstance(raw, dict):
+            continue
+        viewport = raw.get("viewport") or {}
+        if int(viewport.get("width", 0)) <= 0 or int(viewport.get("height", 0)) <= 0:
+            continue
+        is_main = frame is page.main_frame
+        if not raw.get("layers") and not is_main:
+            continue
+        try:
+            snapshots.append(
+                FrameUi(
+                    frame_index=index,
+                    frame_url=frame.url,
+                    is_main=is_main,
+                    viewport=Viewport(width=int(viewport["width"]), height=int(viewport["height"])),
+                    layers=tuple(UiLayer.model_validate(item) for item in raw["layers"]),
+                    controls=tuple(UiControl.model_validate(item) for item in raw["controls"]),
+                    other_controls=int(raw.get("other_controls", 0)),
+                    truncated=bool(raw.get("truncated", False)),
+                )
+            )
+        except (KeyError, TypeError, ValueError) as exc:
+            # A hostile or exotic page must not break collection; the frame is
+            # simply absent from the snapshot.
+            logger.warning("consent UI snapshot rejected for frame %s: %s", frame.url, exc)
+    return tuple(snapshots)
 
 
 async def capture_screenshot(page: Page, store: ArtifactStore, prefix: str) -> ArtifactRef | None:

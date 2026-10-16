@@ -1,0 +1,262 @@
+# Curated third-party host knowledge base (ADR-0013).
+#
+# Self-authored on purpose: the best-known tracker lists (Disconnect, DuckDuckGo
+# Tracker Radar) are CC BY-NC-SA, which would bar any commercial use of this
+# project. Entries match a request host by suffix ("doubleclick.net" matches
+# "stats.g.doubleclick.net"), optionally narrowed by a path prefix. The most
+# specific (longest) matching suffix wins.
+#
+# Categories for hosts: analytics | marketing | functional | infrastructure |
+# consent_management (CMP hosts are merged in from cmp.yaml).
+# `exemption` overrides the category default where the vendor's own design
+# makes the consent question configuration-dependent.
+
+vendors:
+  # ------------------------------------------------------------------ analytics
+  google_analytics:
+    name: Google Analytics
+    category: analytics
+    hosts: [google-analytics.com, analytics.google.com]
+  microsoft_clarity:
+    name: Microsoft Clarity
+    category: analytics
+    hosts: [clarity.ms]
+  hotjar:
+    name: Hotjar
+    category: analytics
+    hosts: [hotjar.com, hotjar.io]
+  matomo_cloud:
+    name: Matomo Cloud
+    category: analytics
+    exemption: conditional
+    exemption_note: >-
+      Matomo can be configured for the CNIL audience-measurement exemption;
+      the configuration is not observable from outside.
+    hosts: [matomo.cloud]
+  piano_analytics:
+    name: Piano Analytics (AT Internet)
+    category: analytics
+    exemption: conditional
+    exemption_note: >-
+      Piano Analytics offers a configuration intended for the CNIL
+      audience-measurement exemption; the configuration is not observable.
+    hosts: [xiti.com, pa-cd.com]
+  cloudflare_web_analytics:
+    name: Cloudflare Web Analytics
+    category: analytics
+    exemption: conditional
+    exemption_note: >-
+      Cookieless page-view beacon. Art. 5(3) still covers sending information
+      from the device (EDPB Guidelines 2/2023); whether an exemption applies
+      depends on what is collected and for whom.
+    hosts: [cloudflareinsights.com]
+  adobe_analytics:
+    name: Adobe Analytics
+    category: analytics
+    hosts: [omtrdc.net, 2o7.net, demdex.net]
+  segment:
+    name: Segment
+    category: analytics
+    hosts: [segment.io, segment.com, segmentapis.com]
+  amplitude:
+    name: Amplitude
+    category: analytics
+    hosts: [amplitude.com]
+  mixpanel:
+    name: Mixpanel
+    category: analytics
+    hosts: [mixpanel.com, mxpnl.com]
+  heap:
+    name: Heap
+    category: analytics
+    hosts: [heapanalytics.com, heap-api.com]
+  fullstory:
+    name: FullStory
+    category: analytics
+    hosts: [fullstory.com]
+  mouseflow:
+    name: Mouseflow
+    category: analytics
+    hosts: [mouseflow.com]
+  contentsquare:
+    name: Contentsquare
+    category: analytics
+    hosts: [contentsquare.net, contentsquare.com]
+  yandex_metrica:
+    name: Yandex Metrica
+    category: analytics
+    hosts: [mc.yandex.ru, mc.yandex.com, mc.webvisor.org]
+
+  # ------------------------------------------------------------------ marketing
+  google_ads:
+    name: Google Ads / DoubleClick
+    category: marketing
+    hosts: [doubleclick.net, googleadservices.com, googlesyndication.com, googletagservices.com,
+            adservice.google.com]
+  meta_pixel:
+    name: Meta (Facebook) Pixel
+    category: marketing
+    hosts: [connect.facebook.net]
+  meta_pixel_endpoint:
+    name: Meta (Facebook) Pixel
+    category: marketing
+    hosts: [facebook.com]
+    path_prefix: /tr
+  microsoft_ads:
+    name: Microsoft Advertising (UET)
+    category: marketing
+    hosts: [bat.bing.com, bat.bing.net]
+  linkedin:
+    name: LinkedIn Insight Tag
+    category: marketing
+    hosts: [ads.linkedin.com, snap.licdn.com]
+  tiktok:
+    name: TikTok Pixel
+    category: marketing
+    hosts: [analytics.tiktok.com]
+  x_twitter:
+    name: X (Twitter) Pixel
+    category: marketing
+    hosts: [ads-twitter.com, analytics.twitter.com, t.co]
+  pinterest:
+    name: Pinterest Tag
+    category: marketing
+    hosts: [ct.pinterest.com]
+  pinterest_tag_script:
+    name: Pinterest Tag
+    category: marketing
+    hosts: [s.pinimg.com]
+    path_prefix: /ct/
+  snap:
+    name: Snap Pixel
+    category: marketing
+    hosts: [tr.snapchat.com, sc-static.net]
+  criteo:
+    name: Criteo
+    category: marketing
+    hosts: [criteo.com, criteo.net]
+  taboola:
+    name: Taboola
+    category: marketing
+    hosts: [taboola.com]
+  outbrain:
+    name: Outbrain
+    category: marketing
+    hosts: [outbrain.com]
+  xandr:
+    name: Xandr (Microsoft Invest)
+    category: marketing
+    hosts: [adnxs.com]
+  the_trade_desk:
+    name: The Trade Desk
+    category: marketing
+    hosts: [adsrvr.org]
+  amazon_ads:
+    name: Amazon Ads
+    category: marketing
+    hosts: [amazon-adsystem.com]
+  equativ:
+    name: Equativ (Smart AdServer)
+    category: marketing
+    hosts: [smartadserver.com]
+  teads:
+    name: Teads
+    category: marketing
+    hosts: [teads.tv]
+  ad_exchanges:
+    name: Programmatic ad exchange
+    category: marketing
+    hosts: [rubiconproject.com, pubmatic.com, casalemedia.com, openx.net, 3lift.com,
+            bidswitch.net, adform.net]
+  comscore:
+    name: Comscore
+    category: marketing
+    hosts: [scorecardresearch.com]
+  quantcast_measure:
+    name: Quantcast
+    category: marketing
+    hosts: [quantserve.com, quantcount.com]
+  hubspot:
+    name: HubSpot tracking
+    category: marketing
+    hosts: [hs-scripts.com, hs-analytics.net, hsadspixel.net, track.hubspot.com]
+
+  # ----------------------------------------------------------------- functional
+  youtube:
+    name: YouTube (embedded player)
+    category: functional
+    hosts: [youtube.com, youtube-nocookie.com]
+  vimeo:
+    name: Vimeo (embedded player)
+    category: functional
+    hosts: [player.vimeo.com, vimeo.com]
+  google_maps:
+    name: Google Maps
+    category: functional
+    hosts: [maps.googleapis.com]
+  recaptcha:
+    name: Google reCAPTCHA
+    category: functional
+    hosts: [google.com, gstatic.com]
+    path_prefix: /recaptcha/
+  hcaptcha:
+    name: hCaptcha
+    category: functional
+    hosts: [hcaptcha.com]
+  intercom:
+    name: Intercom (chat)
+    category: functional
+    hosts: [intercom.io, intercomcdn.com]
+  zendesk:
+    name: Zendesk
+    category: functional
+    hosts: [zdassets.com, zopim.com, zendesk.com]
+  crisp:
+    name: Crisp (chat)
+    category: functional
+    hosts: [crisp.chat]
+  stripe:
+    name: Stripe
+    category: functional
+    hosts: [js.stripe.com, m.stripe.network]
+  monitoring:
+    name: Error / performance monitoring
+    category: functional
+    exemption_note: >-
+      Monitoring tools collect device and usage data; whether this is strictly
+      necessary is debated and depends on configuration.
+    hosts: [sentry.io, sentry-cdn.com, nr-data.net, newrelic.com, browser-intake-datadoghq.com,
+            browser-intake-datadoghq.eu, datadoghq-browser-agent.com]
+
+  # ------------------------------------------------------------- infrastructure
+  google_tag_manager:
+    name: Google Tag Manager
+    category: infrastructure
+    exemption_note: >-
+      Container loader. The tags it loads are assessed individually; Google
+      Analytics (gtag.js) also loads from this host and is caught by its
+      collection requests and cookies.
+    hosts: [googletagmanager.com]
+  google_fonts:
+    name: Google Fonts
+    category: infrastructure
+    exemption_note: >-
+      Transmits the visitor's IP address to Google. LG München I
+      (3 O 17493/20, 20 Jan 2022) found this unlawful without consent under
+      German law; other authorities have not followed uniformly.
+    hosts: [fonts.googleapis.com, fonts.gstatic.com]
+  google_hosted_libraries:
+    name: Google Hosted Libraries / static
+    category: infrastructure
+    hosts: [ajax.googleapis.com, gstatic.com, ytimg.com]
+  adobe_fonts:
+    name: Adobe Fonts
+    category: infrastructure
+    hosts: [use.typekit.net, p.typekit.net]
+  public_cdns:
+    name: Public CDN
+    category: infrastructure
+    hosts: [cdnjs.cloudflare.com, cdn.jsdelivr.net, unpkg.com, code.jquery.com,
+            bootstrapcdn.com, cloudfront.net, akamaihd.net, akamaized.net, fastly.net,
+            azureedge.net, b-cdn.net, cloudinary.com, imgix.net, shopifycdn.com,
+            cdn.shopify.com, wp.com, squarespace-cdn.com, wixstatic.com, polyfill-fastly.io]

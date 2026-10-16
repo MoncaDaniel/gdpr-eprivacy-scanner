@@ -1,0 +1,101 @@
+{
+  "schema_version": "1.1.0",
+  "scan_id": "golden-clean",
+  "scanner_version": "0.1.0",
+  "created_at": "2026-10-16T16:31:15.481463Z",
+  "target": {
+    "input_url": "http://site.test:40693/clean.html",
+    "normalized_url": "http://site.test:40693/clean.html"
+  },
+  "environment": {
+    "engine": "chromium",
+    "engine_version": "153.0.8010.12",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36",
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "locale": "fr-FR",
+    "timezone": "Europe/Paris",
+    "accept_language": "fr-FR,fr;q=0.9,en;q=0.8",
+    "headless": true,
+    "vantage_point": "test:loopback"
+  },
+  "sessions": [
+    {
+      "kind": "S0_baseline",
+      "outcome": "completed",
+      "started_at": "2026-10-16T16:31:15.885391Z",
+      "duration_ms": 2095,
+      "observation_window_ms": 2001,
+      "error": null,
+      "navigation": {
+        "requested_url": "http://site.test:40693/clean.html",
+        "final_url": "http://site.test:40693/clean.html",
+        "status": 200,
+        "redirect_chain": [],
+        "page_title": "Clean fixture",
+        "dom_content_loaded_ms": 33,
+        "load_ms": 34,
+        "network_idle_reached": true
+      },
+      "obstruction": null,
+      "cookies": [],
+      "requests": [
+        {
+          "sequence": 0,
+          "url": "http://site.test:40693/clean.html",
+          "method": "GET",
+          "resource_type": "document",
+          "started_ms": 12,
+          "frame_url": "about:blank",
+          "is_navigation": true,
+          "redirected_from": null,
+          "status": 200,
+          "server_ip": "127.0.0.1",
+          "failure": null,
+          "blocked_by": null,
+          "url_truncated": false
+        }
+      ],
+      "requests_dropped": 0,
+      "storage": [],
+      "frames": [
+        {
+          "url": "http://site.test:40693/clean.html",
+          "name": "",
+          "is_main": true,
+          "dom": {
+            "path": "s0_baseline/dom/frame-00.html",
+            "media_type": "text/html; charset=utf-8",
+            "sha256": "e861b2abce021416483abc2e93ec107f89abef4946fef25f5bc23f926f3f9f1d",
+            "size_bytes": 192
+          },
+          "dom_truncated": false
+        }
+      ],
+      "screenshot": {
+        "path": "s0_baseline/screenshot.png",
+        "media_type": "image/png",
+        "sha256": "359efc5786ca4a8c88df85061ea530acac3a626d594bfff44ef79157b255ffad",
+        "size_bytes": 10222
+      },
+      "guard_violations": [],
+      "consent_ui": [
+        {
+          "frame_index": 0,
+          "frame_url": "http://site.test:40693/clean.html",
+          "is_main": true,
+          "viewport": {
+            "width": 1366,
+            "height": 768
+          },
+          "layers": [],
+          "controls": [],
+          "other_controls": 0,
+          "truncated": false
+        }
+      ]
+    }
+  ]
+}

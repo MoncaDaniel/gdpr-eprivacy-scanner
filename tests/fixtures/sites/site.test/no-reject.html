@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>No reject on first layer fixture</title>
+  <script>document.cookie = "_fbp=fb.1.1700000000.123; max-age=7776000; path=/";</script>
+</head>
+<body>
+  <h1>No-reject site</h1>
+  <div class="cookie-banner" style="position:fixed;bottom:0;left:0;right:0;padding:16px;background:#fff">
+    Nous utilisons des cookies pour améliorer votre expérience.
+    <button>Accepter &amp; fermer</button>
+    <a href="#prefs">Paramétrer</a>
+    <!-- A second layer exists in the DOM but is hidden: it must not count. -->
+    <div id="prefs" style="display:none"><button>Tout refuser</button></div>
+  </div>
+</body>
+</html>

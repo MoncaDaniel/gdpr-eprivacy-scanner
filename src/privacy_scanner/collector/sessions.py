@@ -10,7 +10,8 @@ S0 protocol (ADR-0010)
    no scrolling, no mouse movement, no key presses. Scrolling is excluded on
    purpose: some consent platforms treat scrolling as consent, which would
    contaminate the "before consent" baseline.
-4. Capture cookie jar, Web Storage, DOM and a viewport screenshot.
+4. Capture cookie jar, Web Storage, DOM, the consent-UI snapshot (visible
+   overlay layers and their controls, ADR-0012) and a viewport screenshot.
 """
 
 from __future__ import annotations
@@ -27,6 +28,7 @@ from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 from privacy_scanner.collector.artifacts import ArtifactStore
 from privacy_scanner.collector.browser import new_isolated_context
 from privacy_scanner.collector.capture import (
+    capture_consent_ui,
     capture_frames,
     capture_screenshot,
     capture_storage,
@@ -153,6 +155,7 @@ async def _observe(
         max_frames=settings.max_frames,
         max_dom_bytes=settings.max_dom_bytes,
     )
+    consent_ui = await capture_consent_ui(page, max_frames=settings.max_frames)
     screenshot = await capture_screenshot(page, deps.store, prefix)
 
     violations = recorder.violations
@@ -182,6 +185,7 @@ async def _observe(
         frames=frames,
         screenshot=screenshot,
         guard_violations=violations,
+        consent_ui=consent_ui,
     )
 
 

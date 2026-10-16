@@ -1,0 +1,134 @@
+# Consent management platform (CMP) signatures (ADR-0013).
+#
+# A CMP is recognised from any of: a request to one of its hosts (suffix
+# match), a request path matching `path_pattern` (self-hosted scripts such as
+# WordPress plugins), a consent-UI layer whose element hint matches
+# `element_pattern`, or one of its consent-record cookies/storage keys.
+# Recognising a CMP says nothing about whether it is configured lawfully.
+#
+# Consent-record cookies are classified consent_management (exempt): storing
+# the user's own choice is necessary to honour it.
+
+cmps:
+  didomi:
+    name: Didomi
+    hosts: [sdk.privacy-center.org, api.privacy-center.org]
+    element_pattern: 'didomi'
+    cookies: [{name: didomi_token}]
+  axeptio:
+    name: Axeptio
+    hosts: [static.axept.io, client.axept.io, api.axept.io]
+    element_pattern: 'axeptio'
+    cookies: [{name: axeptio_cookies}, {name: axeptio_authorized_vendors}, {name: axeptio_all_vendors}]
+  onetrust:
+    name: OneTrust
+    hosts: [cdn.cookielaw.org, optanon.blob.core.windows.net, cookie-cdn.cookiepro.com, geolocation.onetrust.com]
+    element_pattern: 'onetrust|optanon'
+    cookies: [{name: OptanonConsent}, {name: OptanonAlertBoxClosed}]
+  cookiebot:
+    name: Cookiebot (Usercentrics)
+    hosts: [consent.cookiebot.com, consentcdn.cookiebot.com, consent.cookiebot.eu]
+    element_pattern: 'cybotcookiebot'
+    cookies: [{name: CookieConsent}, {prefix: CookieConsentBulkSetting-}]
+  usercentrics:
+    name: Usercentrics
+    hosts: [app.usercentrics.eu, web.cmp.usercentrics.eu, privacy-proxy.usercentrics.eu, api.usercentrics.eu]
+    element_pattern: 'usercentrics'
+    cookies: [{name: uc_settings, kinds: [storage]}, {name: uc_user_interaction, kinds: [storage]},
+              {name: ucData, kinds: [storage]}]
+  sourcepoint:
+    name: Sourcepoint
+    hosts: [privacy-mgmt.com, sourcepoint.mgr.consensu.org]
+    element_pattern: 'sp_message'
+    cookies: [{name: consentUUID}, {name: consentDate}]
+  inmobi_choice:
+    name: InMobi Choice (formerly Quantcast Choice)
+    hosts: [cmp.inmobi.com, quantcast.mgr.consensu.org, cmp.quantcast.com]
+    element_pattern: 'qc-cmp2'
+    cookies: []
+  trustarc:
+    name: TrustArc
+    hosts: [consent.trustarc.com, consent-pref.trustarc.com, consent.truste.com]
+    element_pattern: 'truste'
+    cookies: [{name: notice_preferences}, {name: notice_gdpr_prefs}, {name: cmapi_cookie_privacy},
+              {name: notice_behavior}]
+  sirdata:
+    name: Sirdata
+    hosts: [cache.consentframework.com, choices.consentframework.com, api.consentframework.com]
+    element_pattern: 'sd-cmp'
+    cookies: []
+  iubenda:
+    name: iubenda
+    hosts: [cdn.iubenda.com, cs.iubenda.com]
+    element_pattern: 'iubenda'
+    cookies: [{prefix: _iub_cs-}]
+  complianz:
+    name: Complianz
+    path_pattern: '/wp-content/plugins/complianz-gdpr(-premium)?/'
+    element_pattern: 'cmplz'
+    cookies: [{prefix: cmplz_}]
+  tarteaucitron:
+    name: tarteaucitron.js
+    hosts: [tarteaucitron.io]
+    path_pattern: 'tarteaucitron(\.min)?\.js'
+    element_pattern: 'tarteaucitron'
+    cookies: [{name: tarteaucitron}]
+  cookieyes:
+    name: CookieYes
+    hosts: [cdn-cookieyes.com, log.cookieyes.com]
+    element_pattern: 'cky-consent|cookie-law-info'
+    cookies: [{name: cookieyes-consent}, {name: CookieLawInfoConsent}, {prefix: cookielawinfo-checkbox-}]
+  klaro:
+    name: Klaro
+    path_pattern: 'klaro(\.min)?\.js'
+    element_pattern: 'klaro'
+    cookies: [{name: klaro}]
+  consentmanager:
+    name: consentmanager
+    hosts: [consentmanager.net]
+    element_pattern: 'cmpbox'
+    cookies: [{prefix: __cmpcc}, {prefix: __cmpconsent}]
+  commanders_act:
+    name: Commanders Act TrustCommander
+    hosts: [cdn.trustcommander.net, privacy.trustcommander.net]
+    element_pattern: 'tc_privacy|footer_tc_privacy'
+    cookies: [{name: TC_PRIVACY}, {name: TC_PRIVACY_CENTER}]
+  osano:
+    name: Osano
+    hosts: [cmp.osano.com]
+    element_pattern: 'osano-cm'
+    cookies: [{name: osano_consentmanager}, {name: osano_consentmanager_uuid}]
+  google_funding_choices:
+    name: Google Funding Choices (Privacy & messaging)
+    hosts: [fundingchoicesmessages.google.com]
+    element_pattern: 'fc-consent-root'
+    cookies: [{name: FCCDCF}]
+  appconsent:
+    name: AppConsent (SFBX)
+    hosts: [appconsent.io]
+    element_pattern: 'appconsent'
+    cookies: []
+  borlabs:
+    name: Borlabs Cookie
+    path_pattern: '/wp-content/plugins/borlabs-cookie/'
+    element_pattern: 'borlabscookie'
+    cookies: [{name: borlabs-cookie}]
+
+# Consent records that are not tied to one CMP (IAB TCF strings, Google
+# Additional Consent, US privacy string, platform-specific consent cookies).
+generic_consent_records:
+  - {name: euconsent-v2, kinds: [cookie, storage]}
+  - {name: euconsent}
+  - {name: addtl_consent}
+  - {name: usprivacy}
+  - {name: SOCS, domains: [google.com]}
+  - {name: li_gc, domains: [linkedin.com]}
+  - {name: _tracking_consent}
+  - {name: mtm_consent}
+  - {name: mtm_consent_removed}
+  - {name: mtm_cookie_consent}
+  - {name: __hs_opt_out}
+  - {name: __hs_do_not_track}
+  - {name: __hs_initial_opt_in}
+  - {name: __hs_cookie_cat_pref}
+  - {name: _pprv}

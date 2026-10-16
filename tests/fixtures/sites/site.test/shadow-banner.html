@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Consent banner in an open shadow root fixture</title>
+  <script>document.cookie = "_hjSessionUser_42=eyJpZCI6IjEifQ; max-age=31536000; path=/";</script>
+</head>
+<body>
+  <h1>Shadow banner</h1>
+  <div id="usercentrics-root"></div>
+  <script>
+    // Usercentrics-style: the banner lives in an open shadow root.
+    const root = document.getElementById("usercentrics-root").attachShadow({ mode: "open" });
+    root.innerHTML = '<div style="position:fixed;bottom:0;left:0;right:0;padding:16px;background:#fff">' +
+      'Wir verwenden Cookies. <button>Alle akzeptieren</button> <button>Nur notwendige Cookies</button></div>';
+  </script>
+</body>
+</html>

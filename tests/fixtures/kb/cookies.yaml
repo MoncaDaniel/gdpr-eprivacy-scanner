@@ -1,0 +1,6 @@
+vendors:
+  fixture_tracker:
+    name: Fixture Tracker
+    category: marketing
+    entries:
+      - {name: _late_tag}

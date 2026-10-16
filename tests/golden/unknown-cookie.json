@@ -1,0 +1,117 @@
+{
+  "scores": [
+    {
+      "regulation": "eprivacy",
+      "score": 100,
+      "catalogued": 11,
+      "scored": 1,
+      "passed": 1,
+      "failed": 0,
+      "manual_review": 4,
+      "not_applicable": 3,
+      "errors": 0,
+      "not_yet_evaluated": 3
+    },
+    {
+      "regulation": "gdpr",
+      "score": null,
+      "catalogued": 13,
+      "scored": 0,
+      "passed": 0,
+      "failed": 0,
+      "manual_review": 0,
+      "not_applicable": 0,
+      "errors": 0,
+      "not_yet_evaluated": 13
+    }
+  ],
+  "banner": null,
+  "findings": [
+    {
+      "rule_id": "EP-01",
+      "verdict": "manual_review",
+      "confidence": "medium",
+      "review_reason": "unclassified_items",
+      "explanation": "No cookie known to require consent was found, but 1 cookie(s) stored before any interaction could not be confirmed as exempt: xq_pref_v2 (unknown vendor, unknown, first-party). Their purpose has to be checked before drawing a conclusion.",
+      "evidence": [
+        "xq_pref_v2"
+      ]
+    },
+    {
+      "rule_id": "EP-02",
+      "verdict": "pass",
+      "confidence": "high",
+      "review_reason": null,
+      "explanation": "No request to a known analytics or advertising service, and no unclassified beacon-like request, was observed before any interaction. No third-party site was contacted.",
+      "evidence": []
+    },
+    {
+      "rule_id": "EP-03",
+      "verdict": "manual_review",
+      "confidence": "medium",
+      "review_reason": "unclassified_items",
+      "explanation": "1 Web Storage key(s) written before any interaction look like identifiers or come from third parties and could not be classified: visitor_uid (localStorage of http://site.test:40693). Their purpose has to be checked.",
+      "evidence": [
+        "visitor_uid"
+      ]
+    },
+    {
+      "rule_id": "EP-04",
+      "verdict": "not_applicable",
+      "confidence": "medium",
+      "review_reason": null,
+      "explanation": "No tracker requiring consent was observed and no consent interface was detected. A consent banner is only needed when non-exempt trackers are used, so its absence is not an issue in itself. Trackers that only load after an interaction would not have been observed.",
+      "evidence": []
+    },
+    {
+      "rule_id": "EP-05",
+      "verdict": "not_applicable",
+      "confidence": "medium",
+      "review_reason": null,
+      "explanation": "No consent interface was detected, so there is no first layer to examine. Whether one is needed is covered by EP-04.",
+      "evidence": []
+    },
+    {
+      "rule_id": "EP-09",
+      "verdict": "not_applicable",
+      "confidence": "high",
+      "review_reason": null,
+      "explanation": "No analytics cookie was stored before consent, so no audience-measurement lifetime applies to this observation.",
+      "evidence": []
+    },
+    {
+      "rule_id": "EP-10",
+      "verdict": "manual_review",
+      "confidence": "high",
+      "review_reason": "not_automatable",
+      "explanation": "This point cannot be established by observing the website from outside. It is listed so a reviewer can examine it.",
+      "evidence": []
+    },
+    {
+      "rule_id": "EP-11",
+      "verdict": "manual_review",
+      "confidence": "high",
+      "review_reason": "not_automatable",
+      "explanation": "This point cannot be established by observing the website from outside. It is listed so a reviewer can examine it.",
+      "evidence": []
+    }
+  ],
+  "not_yet_evaluated": [
+    "EP-06",
+    "EP-07",
+    "EP-08",
+    "GD-01",
+    "GD-02",
+    "GD-03",
+    "GD-04",
+    "GD-05",
+    "GD-06",
+    "GD-07",
+    "GD-08",
+    "GD-09",
+    "GD-10",
+    "GD-11",
+    "GD-12",
+    "GD-13"
+  ]
+}

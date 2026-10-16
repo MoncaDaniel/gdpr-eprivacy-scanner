@@ -1,0 +1,127 @@
+{
+  "schema_version": "1.1.0",
+  "scan_id": "golden-unknown-cookie",
+  "scanner_version": "0.1.0",
+  "created_at": "2026-10-16T16:31:31.583926Z",
+  "target": {
+    "input_url": "http://site.test:40693/unknown-cookie.html",
+    "normalized_url": "http://site.test:40693/unknown-cookie.html"
+  },
+  "environment": {
+    "engine": "chromium",
+    "engine_version": "153.0.8010.12",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36",
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "locale": "fr-FR",
+    "timezone": "Europe/Paris",
+    "accept_language": "fr-FR,fr;q=0.9,en;q=0.8",
+    "headless": true,
+    "vantage_point": "test:loopback"
+  },
+  "sessions": [
+    {
+      "kind": "S0_baseline",
+      "outcome": "completed",
+      "started_at": "2026-10-16T16:31:31.969144Z",
+      "duration_ms": 2085,
+      "observation_window_ms": 2001,
+      "error": null,
+      "navigation": {
+        "requested_url": "http://site.test:40693/unknown-cookie.html",
+        "final_url": "http://site.test:40693/unknown-cookie.html",
+        "status": 200,
+        "redirect_chain": [],
+        "page_title": "Unclassified cookie fixture",
+        "dom_content_loaded_ms": 30,
+        "load_ms": 31,
+        "network_idle_reached": true
+      },
+      "obstruction": null,
+      "cookies": [
+        {
+          "name": "xq_pref_v2",
+          "domain": "site.test",
+          "path": "/",
+          "value": {
+            "length": 1,
+            "digest": "7dc73e41a91e877e"
+          },
+          "expires_at": "2026-10-17T16:31:32.055550Z",
+          "lifetime_seconds": 86398,
+          "http_only": false,
+          "secure": false,
+          "same_site": "Lax",
+          "first_observed_ms": 268
+        }
+      ],
+      "requests": [
+        {
+          "sequence": 0,
+          "url": "http://site.test:40693/unknown-cookie.html",
+          "method": "GET",
+          "resource_type": "document",
+          "started_ms": 11,
+          "frame_url": "about:blank",
+          "is_navigation": true,
+          "redirected_from": null,
+          "status": 200,
+          "server_ip": "127.0.0.1",
+          "failure": null,
+          "blocked_by": null,
+          "url_truncated": false
+        }
+      ],
+      "requests_dropped": 0,
+      "storage": [
+        {
+          "origin": "http://site.test:40693",
+          "area": "localStorage",
+          "key": "visitor_uid",
+          "value": {
+            "length": 7,
+            "digest": "213a1eb3917f27d4"
+          }
+        }
+      ],
+      "frames": [
+        {
+          "url": "http://site.test:40693/unknown-cookie.html",
+          "name": "",
+          "is_main": true,
+          "dom": {
+            "path": "s0_baseline/dom/frame-00.html",
+            "media_type": "text/html; charset=utf-8",
+            "sha256": "e9ca4c30bdbf13fb507a3c46c610f78d14bff4932ceea5d5649cf9a1def4968f",
+            "size_bytes": 298
+          },
+          "dom_truncated": false
+        }
+      ],
+      "screenshot": {
+        "path": "s0_baseline/screenshot.png",
+        "media_type": "image/png",
+        "sha256": "013b75aa403ed0d307633383b6231a5652cd2da34c5ca0a54bb7505c4a458bf9",
+        "size_bytes": 8160
+      },
+      "guard_violations": [],
+      "consent_ui": [
+        {
+          "frame_index": 0,
+          "frame_url": "http://site.test:40693/unknown-cookie.html",
+          "is_main": true,
+          "viewport": {
+            "width": 1366,
+            "height": 768
+          },
+          "layers": [],
+          "controls": [],
+          "other_controls": 0,
+          "truncated": false
+        }
+      ]
+    }
+  ]
+}

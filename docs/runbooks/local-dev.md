@@ -17,17 +17,23 @@ make check       # lint + types + all tests
 ## Run a scan
 
 ```bash
-uv run privacy-scanner collect https://www.cnil.fr          # summary tables
+uv run privacy-scanner scan https://www.cnil.fr             # evidence + findings + report
+uv run privacy-scanner assess scans/<scan_id>/evidence.json # re-judge, no network
+uv run privacy-scanner collect https://www.cnil.fr          # evidence only (summary tables)
 uv run privacy-scanner collect example.fr --json > bundle.json
-uv run privacy-scanner collect https://www.lemonde.fr -o /tmp/scans --observe 10 -v
+uv run privacy-scanner scan https://www.lemonde.fr -o /tmp/scans --observe 10 -v
 ```
 
 Each scan writes `<out>/<scan_id>/evidence.json` plus artefacts (`s0_baseline/`
-DOMs and the screenshot).
+DOMs and the screenshot). `scan` and `assess` add `report.json` and a
+self-contained `report.html` in the same folder.
+
+`make docs` regenerates `docs/legal/rule-catalog.md` after a catalog edit;
+`make golden` regenerates golden reports after an intended judgement change.
 
 | Exit code | Meaning |
 |---|---|
-| 0 | Evidence collected, page observed |
+| 0 | Page observed (and, for `scan`/`assess`, report written) |
 | 2 | Input refused (invalid URL or forbidden destination). Nothing was fetched |
 | 3 | Collection ran, but the page could not be observed (blocked / obstructed / failed) |
 

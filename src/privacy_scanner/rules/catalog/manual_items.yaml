@@ -1,0 +1,53 @@
+# Obligations that cannot be observed from a website, listed in every report
+# as "requires manual review" with the reason. Never scored, never counted in
+# coverage (design review §2.2, "Always Tier M").
+
+items:
+  - id: M-01
+    topic: Validity of each legal basis, including legitimate-interest balancing
+    provision: GDPR Art. 6(1), in particular Art. 6(1)(f)
+    reason: Depends on purposes and internal assessments not visible on the website.
+  - id: M-02
+    topic: Accuracy of the privacy notice compared with actual processing
+    provision: GDPR Art. 5(1)(a), Art. 13
+    reason: Requires knowledge of the organisation's real processing activities.
+  - id: M-03
+    topic: Whether a data protection officer is mandatory
+    provision: GDPR Art. 37
+    reason: Depends on the organisation's core activities and scale.
+  - id: M-04
+    topic: Records of processing activities
+    provision: GDPR Art. 30
+    reason: Internal document.
+  - id: M-05
+    topic: Data protection impact assessments
+    provision: GDPR Art. 35
+    reason: Internal document.
+  - id: M-06
+    topic: Processor contracts
+    provision: GDPR Art. 28
+    reason: Contracts with service providers are not public.
+  - id: M-07
+    topic: Security of processing
+    provision: GDPR Art. 32
+    reason: HTTPS is a visible signal only; security measures are mostly internal.
+  - id: M-08
+    topic: Retention actually applied
+    provision: GDPR Art. 5(1)(e)
+    reason: Stated retention can be read; applied retention cannot be observed.
+  - id: M-09
+    topic: Handling of data subject requests
+    provision: GDPR Arts. 12, 15-22
+    reason: Requires exercising the rights and observing the response.
+  - id: M-10
+    topic: Validity of the international transfer mechanism
+    provision: GDPR Chapter V (Arts. 44-49)
+    reason: Adequacy, DPF certification or SCCs are not observable from requests.
+  - id: M-11
+    topic: Joint controllership for embedded third-party content
+    provision: GDPR Art. 26; CJEU C-40/17 Fashion ID
+    reason: Depends on arrangements between the site and the third party.
+  - id: M-12
+    topic: Children's consent for information society services
+    provision: GDPR Art. 8
+    reason: Depends on the audience and on age-verification practices.

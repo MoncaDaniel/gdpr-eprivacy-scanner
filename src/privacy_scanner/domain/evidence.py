@@ -23,8 +23,12 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field
 
-SCHEMA_VERSION = "1.0.0"
-"""Semantic version of the bundle schema. Bump MAJOR on breaking changes."""
+SCHEMA_VERSION = "1.1.0"
+"""Semantic version of the bundle schema. Bump MAJOR on breaking changes.
+
+1.1.0 added ``SessionEvidence.consent_ui`` (ADR-0012). 1.0.0 bundles still load;
+their ``consent_ui`` is ``None`` ("not captured").
+"""
 
 NonNegativeMs = Annotated[int, Field(ge=0)]
 
@@ -82,6 +86,21 @@ class BlockReason(StrEnum):
 class ObstructionKind(StrEnum):
     BOT_CHALLENGE = "bot_challenge"
     HTTP_ERROR = "http_error"
+
+
+class UiLayerKind(StrEnum):
+    """Why an element was recorded as an overlay-like layer (ADR-0012)."""
+
+    FIXED = "fixed"
+    """Computed ``position: fixed``."""
+    STICKY = "sticky"
+    """Computed ``position: sticky``."""
+    DIALOG = "dialog"
+    """An open ``<dialog>``, ``role=dialog|alertdialog`` or ``aria-modal``."""
+    NAMED = "named"
+    """Not positioned, but its id/class looks like a consent platform's container."""
+    FRAME = "frame"
+    """The whole document of an embedded frame."""
 
 
 # --------------------------------------------------------------------------- #
@@ -179,6 +198,66 @@ class Obstruction(_Record):
     provider: str | None = None
 
 
+class Viewport(_Record):
+    width: int = Field(gt=0)
+    height: int = Field(gt=0)
+
+
+class Box(_Record):
+    """CSS-pixel rectangle relative to its frame's viewport."""
+
+    x: float
+    y: float
+    width: float = Field(ge=0)
+    height: float = Field(ge=0)
+
+
+class UiLayer(_Record):
+    """A visible overlay-like region that contains at least one control."""
+
+    layer_id: int = Field(ge=0, description="Unique within its frame.")
+    kind: UiLayerKind
+    element: str = Field(description="tag#id.class hint, for humans; not a stable selector.")
+    box: Box
+    z_index: int | None
+    text: str = Field(description="Visible text of the layer, whitespace-collapsed, truncated.")
+    text_truncated: bool = False
+
+
+class UiControl(_Record):
+    """A visible clickable element inside a ``UiLayer``."""
+
+    layer_id: int = Field(ge=0)
+    tag: str
+    role: str | None
+    label: str = Field(description="Visible text, else aria-label/value/title; truncated.")
+    aria_label: str | None = None
+    box: Box
+    in_viewport: bool
+    font_size_px: float | None
+    font_weight: int | None
+    color: str | None = Field(description="Computed CSS colour of the text.")
+    background_color: str | None = Field(
+        description="First non-transparent computed background walking up from the control."
+    )
+    in_shadow_root: bool
+
+
+class FrameUi(_Record):
+    """Consent-UI snapshot of one frame, taken at the end of the observation window."""
+
+    frame_index: int = Field(ge=0, description="Index into ``SessionEvidence.frames``.")
+    frame_url: str
+    is_main: bool
+    viewport: Viewport
+    layers: tuple[UiLayer, ...] = ()
+    controls: tuple[UiControl, ...] = ()
+    other_controls: int = Field(
+        default=0, ge=0, description="Visible controls outside any layer (not detailed)."
+    )
+    truncated: bool = False
+
+
 class GuardViolation(_Record):
     """A response that arrived from a non-public address despite pre-checks.
 
@@ -214,11 +293,11 @@ class SessionEvidence(_Record):
     frames: tuple[FrameRecord, ...] = ()
     screenshot: ArtifactRef | None = None
     guard_violations: tuple[GuardViolation, ...] = ()
-
-
-class Viewport(_Record):
-    width: int = Field(gt=0)
-    height: int = Field(gt=0)
+    consent_ui: tuple[FrameUi, ...] | None = Field(
+        default=None,
+        description="Overlay layers and their controls per frame (schema >= 1.1.0). "
+        "None means not captured; an empty tuple means captured and nothing found.",
+    )
 
 
 class BrowserEnvironment(_Record):

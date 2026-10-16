@@ -34,8 +34,8 @@ jobs:
           uv run ruff format --check .
       - name: Type-check
         run: uv run mypy
-      - name: Unit tests
-        run: uv run pytest tests/unit
+      - name: Unit and golden tests (no browser)
+        run: uv run pytest tests/unit tests/golden
       - name: Install Chromium
         run: uv run playwright install --with-deps chromium
       - name: Integration tests (hermetic, no internet needed)

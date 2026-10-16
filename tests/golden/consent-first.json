@@ -1,0 +1,141 @@
+{
+  "scores": [
+    {
+      "regulation": "eprivacy",
+      "score": 100,
+      "catalogued": 11,
+      "scored": 5,
+      "passed": 5,
+      "failed": 0,
+      "manual_review": 2,
+      "not_applicable": 1,
+      "errors": 0,
+      "not_yet_evaluated": 3
+    },
+    {
+      "regulation": "gdpr",
+      "score": null,
+      "catalogued": 13,
+      "scored": 0,
+      "passed": 0,
+      "failed": 0,
+      "manual_review": 0,
+      "not_applicable": 0,
+      "errors": 0,
+      "not_yet_evaluated": 13
+    }
+  ],
+  "banner": {
+    "element": "div#didomi-host",
+    "cmp": "Didomi",
+    "confidence": "high",
+    "controls": [
+      [
+        "Tout accepter",
+        "accept"
+      ],
+      [
+        "Tout refuser",
+        "reject"
+      ],
+      [
+        "Personnaliser",
+        "settings"
+      ]
+    ]
+  },
+  "findings": [
+    {
+      "rule_id": "EP-01",
+      "verdict": "pass",
+      "confidence": "high",
+      "review_reason": null,
+      "explanation": "No cookie classified as analytics, marketing or otherwise requiring consent was stored while the page was observed (2.0 s after loading, with no interaction). No cookie was stored.",
+      "evidence": []
+    },
+    {
+      "rule_id": "EP-02",
+      "verdict": "pass",
+      "confidence": "high",
+      "review_reason": null,
+      "explanation": "No request to a known analytics or advertising service, and no unclassified beacon-like request, was observed before any interaction. No third-party site was contacted.",
+      "evidence": []
+    },
+    {
+      "rule_id": "EP-03",
+      "verdict": "pass",
+      "confidence": "high",
+      "review_reason": null,
+      "explanation": "No localStorage or sessionStorage key associated with analytics or advertising was written before any interaction. No Web Storage key was written.",
+      "evidence": []
+    },
+    {
+      "rule_id": "EP-04",
+      "verdict": "pass",
+      "confidence": "high",
+      "review_reason": null,
+      "explanation": "A consent interface was detected on the page (Didomi; controls recognised: accept, reject, settings).",
+      "evidence": [
+        "Didomi",
+        "Tout accepter",
+        "Tout refuser",
+        "Personnaliser"
+      ]
+    },
+    {
+      "rule_id": "EP-05",
+      "verdict": "pass",
+      "confidence": "high",
+      "review_reason": null,
+      "explanation": "The first layer of the consent interface offers a refusal option (“Tout refuser”) alongside acceptance (“Tout accepter”).",
+      "evidence": [
+        "Didomi",
+        "Tout accepter",
+        "Tout refuser",
+        "Personnaliser"
+      ]
+    },
+    {
+      "rule_id": "EP-09",
+      "verdict": "not_applicable",
+      "confidence": "high",
+      "review_reason": null,
+      "explanation": "No analytics cookie was stored before consent, so no audience-measurement lifetime applies to this observation.",
+      "evidence": []
+    },
+    {
+      "rule_id": "EP-10",
+      "verdict": "manual_review",
+      "confidence": "high",
+      "review_reason": "not_automatable",
+      "explanation": "This point cannot be established by observing the website from outside. It is listed so a reviewer can examine it.",
+      "evidence": []
+    },
+    {
+      "rule_id": "EP-11",
+      "verdict": "manual_review",
+      "confidence": "high",
+      "review_reason": "not_automatable",
+      "explanation": "This point cannot be established by observing the website from outside. It is listed so a reviewer can examine it.",
+      "evidence": []
+    }
+  ],
+  "not_yet_evaluated": [
+    "EP-06",
+    "EP-07",
+    "EP-08",
+    "GD-01",
+    "GD-02",
+    "GD-03",
+    "GD-04",
+    "GD-05",
+    "GD-06",
+    "GD-07",
+    "GD-08",
+    "GD-09",
+    "GD-10",
+    "GD-11",
+    "GD-12",
+    "GD-13"
+  ]
+}

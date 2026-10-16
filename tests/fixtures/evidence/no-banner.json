@@ -1,0 +1,186 @@
+{
+  "schema_version": "1.1.0",
+  "scan_id": "golden-no-banner",
+  "scanner_version": "0.1.0",
+  "created_at": "2026-10-16T16:31:26.389732Z",
+  "target": {
+    "input_url": "http://site.test:40693/no-banner.html",
+    "normalized_url": "http://site.test:40693/no-banner.html"
+  },
+  "environment": {
+    "engine": "chromium",
+    "engine_version": "153.0.8010.12",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36",
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "locale": "fr-FR",
+    "timezone": "Europe/Paris",
+    "accept_language": "fr-FR,fr;q=0.9,en;q=0.8",
+    "headless": true,
+    "vantage_point": "test:loopback"
+  },
+  "sessions": [
+    {
+      "kind": "S0_baseline",
+      "outcome": "completed",
+      "started_at": "2026-10-16T16:31:26.801312Z",
+      "duration_ms": 2104,
+      "observation_window_ms": 2003,
+      "error": null,
+      "navigation": {
+        "requested_url": "http://site.test:40693/no-banner.html",
+        "final_url": "http://site.test:40693/no-banner.html",
+        "status": 200,
+        "redirect_chain": [],
+        "page_title": "Trackers without banner fixture",
+        "dom_content_loaded_ms": 31,
+        "load_ms": 44,
+        "network_idle_reached": true
+      },
+      "obstruction": null,
+      "cookies": [
+        {
+          "name": "_ga",
+          "domain": "site.test",
+          "path": "/",
+          "value": {
+            "length": 18,
+            "digest": "ab9b82d65fd9fe4c"
+          },
+          "expires_at": "2027-11-15T16:31:26.877498Z",
+          "lifetime_seconds": 34127998,
+          "http_only": false,
+          "secure": false,
+          "same_site": "Lax",
+          "first_observed_ms": 266
+        }
+      ],
+      "requests": [
+        {
+          "sequence": 0,
+          "url": "http://site.test:40693/no-banner.html",
+          "method": "GET",
+          "resource_type": "document",
+          "started_ms": 10,
+          "frame_url": "about:blank",
+          "is_navigation": true,
+          "redirected_from": null,
+          "status": 200,
+          "server_ip": "127.0.0.1",
+          "failure": null,
+          "blocked_by": null,
+          "url_truncated": false
+        },
+        {
+          "sequence": 1,
+          "url": "http://tracker.test:40693/pixel.gif?uid=1",
+          "method": "GET",
+          "resource_type": "image",
+          "started_ms": 28,
+          "frame_url": "http://site.test:40693/no-banner.html",
+          "is_navigation": false,
+          "redirected_from": null,
+          "status": 200,
+          "server_ip": "127.0.0.1",
+          "failure": null,
+          "blocked_by": null,
+          "url_truncated": false
+        }
+      ],
+      "requests_dropped": 0,
+      "storage": [],
+      "frames": [
+        {
+          "url": "http://site.test:40693/no-banner.html",
+          "name": "",
+          "is_main": true,
+          "dom": {
+            "path": "s0_baseline/dom/frame-00.html",
+            "media_type": "text/html; charset=utf-8",
+            "sha256": "d0a13fbcf89063a2ec1e8c7e476c7f29bd4054315fb14a68b71c1d96b3760b0a",
+            "size_bytes": 446
+          },
+          "dom_truncated": false
+        }
+      ],
+      "screenshot": {
+        "path": "s0_baseline/screenshot.png",
+        "media_type": "image/png",
+        "sha256": "cfa0d59514d070554eb13b2cddb808a3169a9d7e672bc7292a3406e0a798db6a",
+        "size_bytes": 9722
+      },
+      "guard_violations": [],
+      "consent_ui": [
+        {
+          "frame_index": 0,
+          "frame_url": "http://site.test:40693/no-banner.html",
+          "is_main": true,
+          "viewport": {
+            "width": 1366,
+            "height": 768
+          },
+          "layers": [
+            {
+              "layer_id": 0,
+              "kind": "sticky",
+              "element": "header",
+              "box": {
+                "x": 8.0,
+                "y": 99.875,
+                "width": 1350.0,
+                "height": 19.0
+              },
+              "z_index": null,
+              "text": "Home Privacy policy",
+              "text_truncated": false
+            }
+          ],
+          "controls": [
+            {
+              "layer_id": 0,
+              "tag": "a",
+              "role": null,
+              "label": "Home",
+              "aria_label": null,
+              "box": {
+                "x": 8.0,
+                "y": 99.875,
+                "width": 48.0,
+                "height": 19.0
+              },
+              "in_viewport": true,
+              "font_size_px": 16.0,
+              "font_weight": 400,
+              "color": "rgb(0, 0, 238)",
+              "background_color": null,
+              "in_shadow_root": false
+            },
+            {
+              "layer_id": 0,
+              "tag": "a",
+              "role": null,
+              "label": "Privacy policy",
+              "aria_label": null,
+              "box": {
+                "x": 61.0,
+                "y": 99.875,
+                "width": 109.0,
+                "height": 19.0
+              },
+              "in_viewport": true,
+              "font_size_px": 16.0,
+              "font_weight": 400,
+              "color": "rgb(0, 0, 238)",
+              "background_color": null,
+              "in_shadow_root": false
+            }
+          ],
+          "other_controls": 0,
+          "truncated": false
+        }
+      ]
+    }
+  ]
+}

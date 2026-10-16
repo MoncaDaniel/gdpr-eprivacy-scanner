@@ -1,0 +1,87 @@
+# Consent-banner lexicon, FR / EN / ES / DE (design review risk R5).
+#
+# All entries are compared after normalisation: Unicode NFKD, accents removed,
+# lower-case, apostrophes and punctuation turned into spaces, whitespace
+# collapsed. So "J’accepte" == "j accepte" and "Tout refuser ›" == "tout refuser".
+#
+# banner_terms: substrings (on word starts) that mark a layer's text as consent-related.
+# accept / reject / settings / close: a control's whole normalised label must
+#   equal one of the phrases (exact match). Exact matching is deliberate:
+#   "continuer sans accepter" contains "accepter", and "accept only essential
+#   cookies" contains "accept"; substring matching would misread both.
+#
+# Reject phrases include CNIL-accepted equivalents of "tout refuser" such as
+# "continuer sans accepter" (CNIL recommendation 2020-092 as amended, Figure 5;
+# upheld by Conseil d'État 19 June 2026, n° 501417).
+
+banner_terms:
+  # Deliberately narrow: "privacy" or "partners" also appear in ordinary
+  # sticky headers and footers ("Privacy policy"), which are not banners.
+  fr: [cookie, traceur, consentement]
+  en: [cookie, tracker, consent]
+  es: [cookie, consentimiento]
+  de: [cookie, einwilligung, zustimmung]
+
+accept:
+  fr: [accepter, tout accepter, accepter tout, accepter et fermer, accepter fermer,
+       accepter et continuer, accepter les cookies, accepter tous les cookies, j accepte,
+       oui j accepte, j accepte tout, ok, ok pour moi, d accord, c est ok, autoriser,
+       tout autoriser, j autorise, consentir, accepter et poursuivre, je consens]
+  en: [accept, accept all, accept all cookies, accept cookies, i accept, agree, i agree,
+       agree and close, accept and close, accept and continue, allow, allow all,
+       allow all cookies, allow cookies, got it, ok, okay, yes i agree, consent, i consent]
+  es: [aceptar, aceptar todo, aceptar todas, aceptar cookies, aceptar todas las cookies,
+       acepto, permitir todas, permitir todo, aceptar y cerrar, aceptar y continuar,
+       de acuerdo, consentir]
+  de: [akzeptieren, alle akzeptieren, alles akzeptieren, zustimmen, allen zustimmen,
+       alle zulassen, alle cookies akzeptieren, einverstanden, ich stimme zu,
+       akzeptieren und schliessen, zustimmen und weiter, verstanden]
+
+reject:
+  fr: [refuser, tout refuser, refuser tout, je refuse, refuser les cookies, refuser tous les cookies,
+       refuser et fermer, continuer sans accepter, poursuivre sans accepter,
+       continuer sans accepter et fermer, non merci, interdire, tout interdire, je n autorise pas,
+       je n accepte rien, ne pas consentir, ne pas accepter, je ne consens pas,
+       accepter uniquement les cookies necessaires, uniquement les cookies necessaires,
+       cookies necessaires uniquement, necessaires uniquement]
+  en: [reject, reject all, reject all cookies, reject cookies, decline, decline all,
+       decline cookies, deny, deny all, refuse, refuse all, do not accept, i do not accept,
+       continue without accepting, no thanks, no thank you, only necessary,
+       necessary only, only necessary cookies, necessary cookies only, essential only,
+       only essential, essential cookies only, use necessary cookies only,
+       accept only necessary cookies, accept only essential cookies, i decline, disagree,
+       do not consent]
+  es: [rechazar, rechazar todo, rechazar todas, rechazar cookies, rechazar todas las cookies,
+       denegar, no acepto, continuar sin aceptar, solo necesarias, solo las necesarias,
+       usar solo cookies necesarias, no gracias]
+  de: [ablehnen, alle ablehnen, alles ablehnen, cookies ablehnen, nur notwendige,
+       nur notwendige cookies, nur essenzielle cookies, nur erforderliche cookies,
+       nur technisch notwendige cookies, weiter ohne einwilligung, ohne zustimmung fortfahren,
+       nicht zustimmen, verweigern]
+
+settings:
+  fr: [parametrer, parametres, parametrer les cookies, personnaliser, personnaliser mes choix,
+       gerer mes choix, gerer les preferences, gerer mes preferences, gerer les cookies,
+       en savoir plus, plus d options, preferences, je choisis, choisir, options,
+       parametres des cookies, voir nos partenaires, personnaliser votre choix,
+       personnaliser vos choix, gerer vos choix]
+  en: [settings, cookie settings, cookies settings, customize, customise, manage,
+       manage preferences, manage options, manage cookies, manage settings, more options,
+       learn more, preferences, options, show purposes, cookie preferences, privacy settings,
+       let me choose, see partners]
+  es: [configurar, configuracion, personalizar, mas opciones, preferencias, gestionar,
+       ajustes, configurar cookies, mas informacion]
+  de: [einstellungen, anpassen, mehr optionen, cookie einstellungen, details, individuelle einstellungen,
+       praferenzen, mehr erfahren, verwalten]
+
+close:
+  all: [x, close, fermer, schliessen, cerrar, close banner, fermer la banniere, close dialog]
+
+# "Pay or consent" walls offer a paid subscription instead of a refusal
+# (e.g. "S'abonner", "Refuser et s'abonner"). Matched as word-start stems in
+# labels that matched nothing above. Whether such a model gives a free choice
+# is a legal assessment (EP-10), so EP-05 asks for review instead of
+# reporting "no refusal option".
+subscribe_stems: [abonn, subscri, abonnier, suscrib, suscripc, pur abo, payer, zahlen, bezahlen]
+# Controls for people who already subscribe are not an alternative to consent.
+login_stems: [deja abonn, already, connect, log in, login, sign in, se connecter, anmelden, iniciar sesion]

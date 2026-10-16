@@ -11,7 +11,6 @@ import logging
 import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 from playwright.async_api import async_playwright
@@ -24,6 +23,15 @@ from privacy_scanner.config import ScannerSettings
 from privacy_scanner.domain.evidence import EvidenceBundle, ScanTarget
 from privacy_scanner.intake.ssrf_guard import GuardDecision, SsrfGuard
 from privacy_scanner.intake.url import normalize_url
+from privacy_scanner.version import scanner_version
+
+__all__ = [
+    "BUNDLE_FILENAME",
+    "CollectionResult",
+    "TargetRejectedError",
+    "collect",
+    "scanner_version",
+]
 
 logger = logging.getLogger(__name__)
 
@@ -48,13 +56,6 @@ class CollectionResult:
     @property
     def bundle_path(self) -> Path:
         return self.directory / BUNDLE_FILENAME
-
-
-def scanner_version() -> str:
-    try:
-        return version("privacy-scanner")
-    except PackageNotFoundError:  # running from a source tree without install
-        return "0.0.0+unknown"
 
 
 async def collect(

@@ -17,7 +17,8 @@ lifecycle.
 | `sessions.py` | S0 protocol (ADR-0010). Outcome: completed / obstructed / blocked / failed |
 | `network.py` | `NetworkRecorder`: route-level guard check for attribution, request/response/failure events, joined with the `EgressLog` for `server_ip` and proxy refusals |
 | `cookies.py` | Polls the cookie jar so each cookie gets `first_observed_ms`. Keeps cookies that were set and then deleted |
-| `capture.py` | Web Storage per origin (including third-party frames), DOM per frame with open shadow roots, viewport screenshot |
+| `capture.py` | Web Storage per origin (including third-party frames), DOM per frame with open shadow roots, **consent-UI snapshot** (visible overlay layers and their controls with geometry and computed colours, ADR-0012), viewport screenshot |
+| `scripts/scan_consent_ui.js` | Read-only in-page script behind the consent-UI snapshot |
 | `obstruction.py` | Pure recognition of bot challenges and HTTP error pages |
 | `fingerprint.py` | Keyed HMAC value fingerprints (ADR-0008) |
 | `artifacts.py` | `ArtifactStore` port and the local filesystem adapter (object storage in Phase 4) |
@@ -51,11 +52,14 @@ All `PRIVACY_SCANNER_*` settings are listed in the
 hermetic multi-host fixture sites (`tests/fixtures/`). Unit tests cover
 `egress`, `obstruction`, `fingerprint` and `artifacts`.
 
-## Known limitations (also stated in reports from Phase 2)
+## Known limitations (also stated in reports)
 
 - One page load, one vantage point, no interaction. Scroll- or click-triggered
   tracking is not in S0.
 - Cookie `first_observed_ms` is an upper bound, accurate to the poll interval.
 - Closed shadow roots and cross-origin frames beyond `max_frames` are not captured.
+- The consent-UI snapshot sees `button`/link/`role=button`/`onclick` controls;
+  banners drawn on canvas or as images, or with role-less clickable `div`s,
+  are missed.
 - Browser fingerprinting (canvas, WebGL, audio) is not detected (design review §2.5).
 - With a proxy configured Chromium does not use HTTP/3 (ADR-0011).

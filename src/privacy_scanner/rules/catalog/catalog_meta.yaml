@@ -1,0 +1,138 @@
+# Rule catalog metadata (ADR-0006).
+#
+# The catalog version and the SHA-256 of all catalog files are printed in
+# every report. Bump `version` whenever any wording, citation, severity or
+# tier changes: MAJOR for a change that can flip a verdict, MINOR for a new
+# rule, PATCH for wording and citation fixes.
+
+version: 1.0.0
+law_as_of: 2026-10-16
+
+instruments:
+  eprivacy:
+    title: Directive 2002/58/EC (ePrivacy Directive), as amended by Directive 2009/136/EC
+    short: ePrivacy Directive
+    url: https://eur-lex.europa.eu/eli/dir/2002/58/oj
+    amending_url: https://eur-lex.europa.eu/eli/dir/2009/136/oj
+  gdpr:
+    title: Regulation (EU) 2016/679 (General Data Protection Regulation)
+    short: GDPR
+    url: https://eur-lex.europa.eu/eli/reg/2016/679/oj
+
+# Non-binding guidance and case law, cited by key from the rule files.
+# verified_on: date the citation (title, date, pinpoint, URL) was checked
+# against the official source. null = not yet verified; such references may
+# only be used by rules whose status is `planned`.
+references:
+  edpb_g_2_2023:
+    authority: EDPB
+    kind: guidelines
+    document: Guidelines 2/2023 on Technical Scope of Art. 5(3) of ePrivacy Directive, version 2.0
+    date: 2024-10-07
+    jurisdiction: EU
+    binding: false
+    url: https://www.edpb.europa.eu/our-work-tools/our-documents/guidelines/guidelines-22023-technical-scope-art-53-eprivacy-directive_en
+    verified_on: 2026-10-16
+  edpb_cookie_banner_taskforce:
+    authority: EDPB
+    kind: report
+    document: Report of the work undertaken by the Cookie Banner Taskforce
+    date: 2023-01-18
+    jurisdiction: EU
+    binding: false
+    url: https://www.edpb.europa.eu/system/files/documents/2023-01/edpb_20230118_report_cookie_banner_taskforce_en.pdf
+    verified_on: 2026-10-16
+  wp29_opinion_04_2012:
+    authority: Article 29 Working Party
+    kind: opinion
+    document: Opinion 04/2012 on Cookie Consent Exemption (WP 194)
+    date: 2012-06-07
+    jurisdiction: EU
+    binding: false
+    url: https://ec.europa.eu/justice/article-29/documentation/opinion-recommendation/files/2012/wp194_en.pdf
+    verified_on: 2026-10-16
+  cjeu_planet49:
+    authority: CJEU
+    kind: case_law
+    document: Judgment of 1 October 2019, Planet49, C-673/17, ECLI:EU:C:2019:801
+    date: 2019-10-01
+    jurisdiction: EU
+    binding: true
+    url: https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:62017CJ0673
+    verified_on: 2026-10-16
+  cjeu_fashion_id:
+    authority: CJEU
+    kind: case_law
+    document: Judgment of 29 July 2019, Fashion ID, C-40/17, ECLI:EU:C:2019:629
+    date: 2019-07-29
+    jurisdiction: EU
+    binding: true
+    url: https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:62017CJ0040
+    verified_on: 2026-10-16
+  cnil_guidelines_2020_091:
+    authority: CNIL
+    kind: guidelines
+    document: Délibération n° 2020-091 du 17 septembre 2020 portant adoption de lignes directrices relatives à l'application de l'article 82 de la loi du 6 janvier 1978 modifiée (cookies et autres traceurs)
+    date: 2020-09-17
+    jurisdiction: FR
+    binding: false
+    url: https://www.cnil.fr/sites/cnil/files/atoms/files/lignes_directrices_de_la_cnil_sur_les_cookies_et_autres_traceurs.pdf
+    verified_on: 2026-10-16
+  cnil_recommendation_2020_092:
+    authority: CNIL
+    kind: recommendation
+    document: Délibération n° 2020-092 du 17 septembre 2020 portant adoption d'une recommandation (cookies et autres traceurs), consolidated version as amended by délibération n° 2025-131 du 18 décembre 2025
+    date: 2025-12-18
+    jurisdiction: FR
+    binding: false
+    url: https://cnil.fr/sites/default/files/2026-01/recommandation_cookies_consolidee.pdf
+    verified_on: 2026-10-16
+  cnil_audience_measurement:
+    authority: CNIL
+    kind: guidance
+    document: "Cookies : solutions pour les outils de mesure d'audience"
+    jurisdiction: FR
+    binding: false
+    url: https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies-solutions-pour-les-outils-de-mesure-daudience
+    verified_on: 2026-10-16
+  conseil_etat_2026_501417:
+    authority: Conseil d'État (FR)
+    kind: case_law
+    document: CE, 19 juin 2026, n° 501417, association Pour un RGPD respecté et autres (CNIL recommendation, "continuer sans accepter")
+    date: 2026-06-19
+    jurisdiction: FR
+    binding: true
+    url: https://www.conseil-etat.fr/fr/arianeweb/CE/decision/2026-06-19/501417
+    verified_on: 2026-10-16
+  cnil_san_2021_023_024:
+    authority: CNIL
+    kind: decision
+    document: Délibérations SAN-2021-023 (Google LLC and Google Ireland Limited) and SAN-2021-024 (Facebook Ireland Limited) of 31 December 2021
+    date: 2021-12-31
+    jurisdiction: FR
+    binding: false
+    url: null
+    verified_on: null
+  conseil_etat_2020_434684:
+    authority: Conseil d'État (FR)
+    kind: case_law
+    document: CE, 19 juin 2020, n° 434684, Association des agences-conseils en communication et autres (annulment of the general cookie-wall ban in CNIL deliberation 2019-093)
+    date: 2020-06-19
+    jurisdiction: FR
+    binding: true
+    url: https://www.conseil-etat.fr/fr/arianeweb/CE/decision/2020-06-19/434684
+    verified_on: 2026-10-16
+
+# Wording shared by every rule.
+common_explanations:
+  error: >-
+    This check could not run: {reason}. No conclusion can be drawn from this scan for it.
+  manual: >-
+    This point cannot be established by observing the website from outside.
+    It is listed so a reviewer can examine it.
+
+disclaimer: >-
+  Automated technical observation of one page load from one vantage point.
+  It is not a legal assessment and not legal advice. "No issue detected" means
+  the scanner did not observe an issue, not that the site meets its legal
+  obligations.

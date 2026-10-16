@@ -1,0 +1,421 @@
+# Curated cookie and Web Storage key knowledge base (ADR-0013).
+#
+# Precedence: entries here override the Open Cookie Database snapshot.
+# Matching is on the cookie name (or storage key):
+#   name:    exact, case-sensitive
+#   prefix:  starts-with, case-sensitive
+#   pattern: Python regex, full match
+# Optional:
+#   domains: the cookie's (or storage origin's) registrable domain must be one
+#            of these. Used for generic names that only mean something on a
+#            given vendor's domain (e.g. IDE on doubleclick.net).
+#   kinds:   [cookie] by default; add storage when the vendor also writes the
+#            same key to localStorage/sessionStorage.
+#
+# Vendor-level fields:
+#   category:  strictly_necessary | functional | analytics | marketing | consent_management
+#   exemption: optional override of the category default (see ADR-0013)
+#   source:    vendor documentation the classification is based on
+#
+# Consent-record cookies of CMPs live in cmp.yaml and are merged in as
+# consent_management (the CNIL lists cookies storing the user's choice among
+# trackers exempt from consent; WP29 Opinion 04/2012 §3.6 reasoning).
+
+vendors:
+  # ------------------------------------------------------------------ analytics
+  google_analytics:
+    name: Google Analytics
+    category: analytics
+    source: https://developers.google.com/tag-platform/security/concepts/cookies
+    entries:
+      - {name: _ga}
+      - {pattern: '_ga_[A-Za-z0-9]+'}
+      - {name: _gid}
+      - {name: _gat}
+      - {prefix: _gat_}
+      - {prefix: _dc_gtm_}
+      - {name: __utma}
+      - {name: __utmb}
+      - {name: __utmc}
+      - {name: __utmt}
+      - {name: __utmz}
+      - {name: __utmv}
+
+  microsoft_clarity:
+    name: Microsoft Clarity
+    category: analytics
+    source: https://learn.microsoft.com/en-us/clarity/setup-and-installation/cookie-list
+    entries:
+      - {name: _clck}
+      - {name: _clsk}
+      - {name: CLID, domains: [clarity.ms]}
+      - {name: ANONCHK, domains: [clarity.ms]}
+      - {name: SM, domains: [clarity.ms]}
+      - {name: MR, domains: [clarity.ms]}
+
+  hotjar:
+    name: Hotjar
+    category: analytics
+    source: https://help.hotjar.com/hc/en-us/articles/115011789248-Hotjar-Cookie-Information
+    entries:
+      - {prefix: _hj, kinds: [cookie, storage]}
+
+  matomo:
+    name: Matomo
+    category: analytics
+    exemption: conditional
+    exemption_note: >-
+      Matomo can be configured to meet the CNIL conditions for the
+      audience-measurement consent exemption (first-party, anonymous statistics
+      only, no cross-site identifier). Whether this deployment does cannot be
+      seen from outside.
+    source: https://matomo.org/faq/general/faq_146/
+    entries:
+      - {prefix: _pk_id, kinds: [cookie, storage]}
+      - {prefix: _pk_ses, kinds: [cookie, storage]}
+      - {prefix: _pk_ref, kinds: [cookie, storage]}
+      - {prefix: _pk_cvar, kinds: [cookie, storage]}
+      - {prefix: _pk_hsr, kinds: [cookie, storage]}
+      - {prefix: _pk_testcookie, kinds: [cookie, storage]}
+
+  piano_analytics:
+    name: Piano Analytics (AT Internet)
+    category: analytics
+    exemption: conditional
+    exemption_note: >-
+      Piano Analytics offers a configuration intended for the CNIL
+      audience-measurement consent exemption. Whether this deployment uses it
+      cannot be seen from outside.
+    source: https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies-solutions-pour-les-outils-de-mesure-daudience
+    entries:
+      - {name: _pcid, kinds: [cookie, storage]}
+      - {name: _pctx, kinds: [cookie, storage]}
+      - {name: atuserid, kinds: [cookie, storage]}
+      - {name: atidvisitor, kinds: [cookie, storage]}
+      - {name: atsession}
+      - {name: atreman}
+      - {name: atredir}
+
+  wysistat:
+    name: Wysistat
+    category: analytics
+    exemption: conditional
+    exemption_note: >-
+      French audience-measurement tool offering a configuration intended for
+      the CNIL consent exemption; the configuration is not observable.
+    source: https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies-solutions-pour-les-outils-de-mesure-daudience
+    entries:
+      - {name: Wysistat}
+
+  adobe_analytics:
+    name: Adobe Analytics / Experience Cloud
+    category: analytics
+    source: https://experienceleague.adobe.com/en/docs/core-services/interface/data-collection/cookies/analytics
+    entries:
+      - {name: s_cc}
+      - {name: s_sq}
+      - {name: s_vi}
+      - {name: s_fid}
+      - {name: s_ecid}
+      - {prefix: AMCV_}
+      - {prefix: AMCVS_}
+
+  segment:
+    name: Segment
+    category: analytics
+    source: https://segment.com/docs/connections/sources/catalog/libraries/website/javascript/cookie-validity-update/
+    entries:
+      - {name: ajs_anonymous_id, kinds: [cookie, storage]}
+      - {name: ajs_user_id, kinds: [cookie, storage]}
+      - {name: ajs_group_id, kinds: [cookie, storage]}
+
+  amplitude:
+    name: Amplitude
+    category: analytics
+    entries:
+      - {prefix: AMP_, kinds: [cookie, storage]}
+      - {prefix: amp_, kinds: [cookie, storage]}
+      - {prefix: amplitude_id, kinds: [cookie, storage]}
+
+  mixpanel:
+    name: Mixpanel
+    category: analytics
+    entries:
+      - {pattern: 'mp_.*_mixpanel', kinds: [cookie, storage]}
+
+  heap:
+    name: Heap
+    category: analytics
+    entries:
+      - {prefix: _hp2_, kinds: [cookie, storage]}
+
+  yandex_metrica:
+    name: Yandex Metrica
+    category: analytics
+    entries:
+      - {prefix: _ym_, kinds: [cookie, storage]}
+
+  shopify_analytics:
+    name: Shopify (analytics)
+    category: analytics
+    entries:
+      - {name: _shopify_y}
+      - {name: _shopify_s}
+
+  # ------------------------------------------------------------------ marketing
+  google_ads:
+    name: Google Ads / Floodlight
+    category: marketing
+    source: https://business.safety.google/adscookies/
+    entries:
+      - {prefix: _gcl_, kinds: [cookie, storage]}
+      - {name: IDE, domains: [doubleclick.net]}
+      - {name: DSID, domains: [doubleclick.net]}
+      - {name: test_cookie, domains: [doubleclick.net]}
+      - {name: NID, domains: [google.com]}
+      - {name: 1P_JAR, domains: [google.com]}
+
+  youtube:
+    name: YouTube (embedded player)
+    category: marketing
+    source: https://business.safety.google/adscookies/
+    entries:
+      - {name: VISITOR_INFO1_LIVE, domains: [youtube.com]}
+      - {name: VISITOR_PRIVACY_METADATA, domains: [youtube.com]}
+      - {name: YSC, domains: [youtube.com]}
+      - {name: PREF, domains: [youtube.com]}
+      - {name: __Secure-YEC, domains: [youtube.com]}
+
+  meta:
+    name: Meta (Facebook) Pixel
+    category: marketing
+    source: https://www.facebook.com/privacy/policies/cookies/
+    entries:
+      - {name: _fbp}
+      - {name: _fbc}
+      - {name: fr, domains: [facebook.com]}
+
+  microsoft_ads:
+    name: Microsoft Advertising (UET)
+    category: marketing
+    entries:
+      - {prefix: _uet, kinds: [cookie, storage]}
+      - {name: MUID, domains: [bing.com, clarity.ms]}
+
+  linkedin:
+    name: LinkedIn Insight Tag
+    category: marketing
+    source: https://www.linkedin.com/legal/l/cookie-table
+    entries:
+      - {name: li_fat_id}
+      - {name: li_sugr, domains: [linkedin.com]}
+      - {name: bcookie, domains: [linkedin.com]}
+      - {name: lidc, domains: [linkedin.com]}
+      - {name: UserMatchHistory, domains: [linkedin.com]}
+      - {name: AnalyticsSyncHistory, domains: [linkedin.com]}
+      - {name: li_adsId, kinds: [storage]}
+
+  tiktok:
+    name: TikTok Pixel
+    category: marketing
+    entries:
+      - {name: _ttp}
+      - {name: _tt_enable_cookie}
+      - {prefix: ttcsid}
+
+  x_twitter:
+    name: X (Twitter) advertising
+    category: marketing
+    entries:
+      - {name: personalization_id, domains: [twitter.com, x.com]}
+      - {name: muc_ads, domains: [twitter.com, x.com]}
+      - {name: guest_id_ads, domains: [twitter.com, x.com]}
+      - {name: guest_id_marketing, domains: [twitter.com, x.com]}
+      - {name: guest_id, domains: [twitter.com, x.com]}
+
+  pinterest:
+    name: Pinterest Tag
+    category: marketing
+    entries:
+      - {name: _pin_unauth}
+      - {name: _pinterest_ct_ua}
+      - {name: _epik}
+      - {name: _derived_epik}
+
+  snap:
+    name: Snap Pixel
+    category: marketing
+    entries:
+      - {name: _scid}
+      - {name: _scid_r}
+      - {name: sc_at}
+
+  criteo:
+    name: Criteo
+    category: marketing
+    entries:
+      - {prefix: cto_}
+
+  taboola:
+    name: Taboola
+    category: marketing
+    entries:
+      - {name: t_gid}
+      - {name: t_pt_gid}
+
+  outbrain:
+    name: Outbrain
+    category: marketing
+    entries:
+      - {name: obuid}
+
+  quantcast_measure:
+    name: Quantcast Measure
+    category: marketing
+    entries:
+      - {name: __qca}
+      - {name: mc, domains: [quantserve.com]}
+
+  hubspot:
+    name: HubSpot tracking
+    category: marketing
+    source: https://knowledge.hubspot.com/privacy-and-consent/what-cookies-does-hubspot-set-in-a-visitor-s-browser
+    entries:
+      - {name: __hstc}
+      - {name: hubspotutk}
+      - {name: __hssc}
+      - {name: __hssrc}
+
+  # ----------------------------------------------------------------- functional
+  intercom:
+    name: Intercom (chat)
+    category: functional
+    entries:
+      - {prefix: intercom-id-}
+      - {prefix: intercom-session-}
+      - {prefix: intercom-device-id-}
+
+  zendesk_chat:
+    name: Zendesk Chat
+    category: functional
+    entries:
+      - {name: __zlcmid}
+
+  crisp:
+    name: Crisp (chat)
+    category: functional
+    entries:
+      - {prefix: crisp-client/}
+
+  language_preference:
+    name: Language preference (CMS)
+    category: functional
+    exemption_note: >-
+      A cookie storing only the user's chosen language is cited by the CNIL as
+      likely covered by the exemption; it depends on what it stores and when it
+      is set.
+    entries:
+      - {name: pll_language}
+      - {name: wp-wpml_current_language}
+      - {name: googtrans}
+      - {name: localization}
+
+  # --------------------------------------------------------- strictly necessary
+  cloudflare:
+    name: Cloudflare (bot management, load balancing)
+    category: strictly_necessary
+    source: https://developers.cloudflare.com/fundamentals/reference/policies-compliances/cloudflare-cookies/
+    entries:
+      - {name: __cf_bm}
+      - {name: cf_clearance}
+      - {name: _cfuvid}
+      - {name: __cflb}
+      - {name: __cfruid}
+      - {name: cf_ob_info}
+      - {name: cf_use_ob}
+      - {prefix: cf_chl_}
+
+  akamai_bot_manager:
+    name: Akamai Bot Manager
+    category: strictly_necessary
+    entries:
+      - {name: _abck}
+      - {name: ak_bmsc}
+      - {name: bm_sz}
+      - {name: bm_sv}
+      - {name: bm_mi}
+      - {name: bm_so}
+      - {name: bm_s}
+      - {name: bm_ss}
+      - {name: bm_lso}
+
+  imperva:
+    name: Imperva (bot protection)
+    category: strictly_necessary
+    entries:
+      - {prefix: incap_ses_}
+      - {prefix: visid_incap_}
+      - {prefix: nlbi_}
+
+  datadome:
+    name: DataDome (bot protection)
+    category: strictly_necessary
+    entries:
+      - {name: datadome}
+
+  aws_load_balancer:
+    name: AWS Elastic Load Balancing
+    category: strictly_necessary
+    entries:
+      - {name: AWSALB}
+      - {name: AWSALBCORS}
+      - {name: AWSALBTG}
+      - {name: AWSALBTGCORS}
+      - {name: AWSELB}
+      - {name: AWSELBCORS}
+
+  stripe:
+    name: Stripe (fraud prevention)
+    category: strictly_necessary
+    exemption_note: Strictly necessary when the page offers payment; less evident on pages that do not.
+    source: https://stripe.com/legal/cookies-policy
+    entries:
+      - {name: __stripe_mid}
+      - {name: __stripe_sid}
+
+  server_session:
+    name: Server session / CSRF protection
+    category: strictly_necessary
+    exemption_note: >-
+      Generic session and anti-forgery cookies are usually strictly necessary.
+      The name alone does not prove the purpose.
+    entries:
+      - {name: PHPSESSID}
+      - {name: JSESSIONID}
+      - {name: ASP.NET_SessionId}
+      - {pattern: 'ASPSESSIONID[A-Z]+'}
+      - {name: connect.sid}
+      - {name: laravel_session}
+      - {name: XSRF-TOKEN}
+      - {name: csrftoken}
+      - {name: __RequestVerificationToken}
+      - {name: _session_id}
+      - {name: CFID}
+      - {name: CFTOKEN}
+      - {name: SERVERID}
+      - {name: wordpress_test_cookie}
+
+  shopify_core:
+    name: Shopify (cart)
+    category: strictly_necessary
+    entries:
+      - {name: cart}
+      - {name: cart_sig}
+      - {name: secure_customer_sig}
+
+  google_security:
+    name: Google (security, consent state)
+    category: strictly_necessary
+    source: https://business.safety.google/adscookies/
+    entries:
+      - {name: AEC, domains: [google.com]}

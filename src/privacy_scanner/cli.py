@@ -1,8 +1,15 @@
-"""Command-line interface: ``privacy-scanner collect <url>``.
+"""Command-line interface.
 
-Exit codes: 0 evidence collected; 2 input rejected (invalid URL or forbidden
-destination); 3 collection ran but the page could not be observed (blocked,
-obstructed or failed). Scripts can rely on these.
+* ``privacy-scanner scan <url>``: collect evidence, judge it, write
+  ``report.json`` + ``report.html`` next to the evidence bundle.
+* ``privacy-scanner assess <evidence.json>``: re-judge a stored bundle against
+  the current rule catalog, without visiting the site again.
+* ``privacy-scanner collect <url>``: evidence only (Phase 1 behaviour).
+
+Exit codes: 0 success; 2 input rejected (invalid URL or forbidden
+destination, unreadable bundle); 3 the page could not be observed (blocked,
+obstructed or failed; a report is still written, marked as unavailable).
+Scripts can rely on these.
 """
 
 from __future__ import annotations
@@ -14,15 +21,23 @@ from pathlib import Path
 from typing import Annotated
 
 import typer
+from pydantic import ValidationError
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from privacy_scanner.collector.service import TargetRejectedError, collect, scanner_version
+from privacy_scanner.collector.service import (
+    TargetRejectedError,
+    collect,
+    scanner_version,
+)
 from privacy_scanner.collector.summary import digest
 from privacy_scanner.config import ScannerSettings
 from privacy_scanner.domain.evidence import EvidenceBundle, SessionEvidence, SessionOutcome
+from privacy_scanner.domain.report import Report, Verdict
 from privacy_scanner.intake.url import InvalidUrlError
+from privacy_scanner.pipeline import assess
+from privacy_scanner.reporting.render import WrittenReport, write_report
 
 EXIT_REJECTED = 2
 EXIT_NOT_OBSERVED = 3
@@ -42,6 +57,77 @@ DISCLAIMER = (
 )
 
 
+def _settings(output_dir: Path | None, observe: float | None) -> ScannerSettings:
+    overrides: dict[str, object] = {}
+    if output_dir is not None:
+        overrides["output_dir"] = output_dir
+    if observe is not None:
+        overrides["observation_window_s"] = observe
+    return ScannerSettings(**overrides)  # type: ignore[arg-type]
+
+
+def _configure_logging(verbose: bool) -> None:
+    logging.basicConfig(
+        level=logging.INFO if verbose else logging.WARNING,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    )
+
+
+@app.command("scan")
+def scan_command(
+    url: Annotated[str, typer.Argument(help="Page to scan, e.g. https://www.example.fr")],
+    output_dir: Annotated[
+        Path | None, typer.Option("--out", "-o", help="Directory for scan folders.")
+    ] = None,
+    observe: Annotated[
+        float | None,
+        typer.Option("--observe", help="Seconds to observe after load (default 6)."),
+    ] = None,
+    verbose: Annotated[bool, typer.Option("--verbose", "-v")] = False,
+) -> None:
+    """Observe a page before consent, judge it against the rule catalog and write
+    an HTML + JSON report."""
+    _configure_logging(verbose)
+    settings = _settings(output_dir, observe)
+    try:
+        with console.status(f"Observing {url} …", spinner="dots"):
+            result = asyncio.run(collect(url, settings))
+    except InvalidUrlError as exc:
+        err_console.print(f"[red]Invalid URL:[/] {exc}")
+        raise typer.Exit(EXIT_REJECTED) from exc
+    except TargetRejectedError as exc:
+        err_console.print(f"[red]Refused:[/] {exc}")
+        raise typer.Exit(EXIT_REJECTED) from exc
+
+    report = assess(result.bundle)
+    written = write_report(report, result.directory)
+    _render_report(report, written)
+    if report.scan.outcome is not SessionOutcome.COMPLETED:
+        raise typer.Exit(EXIT_NOT_OBSERVED)
+
+
+@app.command("assess")
+def assess_command(
+    bundle_path: Annotated[
+        Path, typer.Argument(help="Path to an evidence.json written by scan/collect.")
+    ],
+    verbose: Annotated[bool, typer.Option("--verbose", "-v")] = False,
+) -> None:
+    """Re-judge a stored Evidence Bundle with the current rule catalog. The site is
+    not contacted. Reports are written next to the bundle."""
+    _configure_logging(verbose)
+    try:
+        bundle = EvidenceBundle.model_validate_json(bundle_path.read_bytes())
+    except (OSError, ValidationError) as exc:
+        err_console.print(f"[red]Cannot read evidence bundle:[/] {exc}")
+        raise typer.Exit(EXIT_REJECTED) from exc
+    report = assess(bundle)
+    written = write_report(report, bundle_path.parent)
+    _render_report(report, written)
+    if report.scan.outcome is not SessionOutcome.COMPLETED:
+        raise typer.Exit(EXIT_NOT_OBSERVED)
+
+
 @app.command("collect")
 def collect_command(
     url: Annotated[str, typer.Argument(help="Page to observe, e.g. https://www.example.fr")],
@@ -58,17 +144,9 @@ def collect_command(
     verbose: Annotated[bool, typer.Option("--verbose", "-v")] = False,
 ) -> None:
     """Observe what a page stores on the device and which servers it contacts
-    before any consent interaction (session S0)."""
-    logging.basicConfig(
-        level=logging.INFO if verbose else logging.WARNING,
-        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
-    )
-    overrides: dict[str, object] = {}
-    if output_dir is not None:
-        overrides["output_dir"] = output_dir
-    if observe is not None:
-        overrides["observation_window_s"] = observe
-    settings = ScannerSettings(**overrides)  # type: ignore[arg-type]
+    before any consent interaction (session S0). Evidence only, no judgement."""
+    _configure_logging(verbose)
+    settings = _settings(output_dir, observe)
 
     try:
         if as_json:
@@ -107,6 +185,44 @@ _OUTCOME_STYLE = {
     SessionOutcome.BLOCKED: "red",
     SessionOutcome.FAILED: "red",
 }
+
+
+_VERDICT_STYLE = {
+    Verdict.FAIL: "red",
+    Verdict.MANUAL_REVIEW: "yellow",
+    Verdict.PASS: "green",
+    Verdict.NOT_APPLICABLE: "dim",
+    Verdict.ERROR: "magenta",
+}
+
+
+def _render_report(report: Report, written: WrittenReport) -> None:
+    lines = [
+        f"[bold]Target[/]      {report.scan.final_url or report.scan.normalized_url}",
+        f"[bold]Outcome[/]     {report.scan.outcome.value}"
+        + (f" — {report.scan.outcome_detail}" if report.scan.outcome_detail else ""),
+    ]
+    for s in report.scores:
+        value = f"{s.score} / 100" if s.score is not None else "not scored"
+        lines.append(f"[bold]{s.title:<12}[/]{value}, {s.coverage_label}")
+    console.print(Panel("\n".join(lines), title="Website Privacy Exposure Score", expand=False))
+
+    table = Table(title="Findings", title_justify="left")
+    for col in ("Rule", "Check", "Verdict", "Severity", "Confidence"):
+        table.add_column(col)
+    for f in report.findings:
+        style = _VERDICT_STYLE[f.verdict]
+        verdict = f"[{style}]{f.verdict_label}[/]"
+        if f.review_reason:
+            verdict += f" [dim]({f.review_reason.label.lower()})[/]"
+        table.add_row(f.rule_id, f.title, verdict, f.severity.value, f.confidence.value)
+    console.print(table)
+    if report.not_yet_evaluated:
+        planned = ", ".join(p.rule_id for p in report.not_yet_evaluated)
+        console.print(f"[dim]Not yet evaluated in this version: {planned}[/]")
+    console.print(f"Report: [bold]{written.html_path}[/]")
+    console.print(f"[dim]JSON: {written.json_path}[/]")
+    console.print(f"[dim]{report.disclaimer}[/]")
 
 
 def _render(bundle: EvidenceBundle, session: SessionEvidence, bundle_path: Path) -> None:

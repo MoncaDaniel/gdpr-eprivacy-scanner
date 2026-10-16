@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Consent-first fixture</title>
+  <script>
+    // Trackers load only after a click on "Tout accepter": nothing before consent.
+    function acceptAll() {
+      document.cookie = "_ga=GA1.1.42.1700000000; max-age=34128000; path=/";
+      new Image().src = "http://tracker.test:{{PORT}}/pixel.gif?ev=consented";
+      document.getElementById("didomi-host").remove();
+    }
+  </script>
+</head>
+<body>
+  <h1>Consent-first site</h1>
+  <div id="didomi-host" role="dialog" aria-label="Consentement" style="position:fixed;bottom:0;left:0;right:0;padding:16px;background:#fff">
+    <p>Avec votre accord, nos partenaires et nous utilisons des cookies.</p>
+    <button onclick="acceptAll()">Tout accepter</button>
+    <button>Tout refuser</button>
+    <button>Personnaliser</button>
+  </div>
+</body>
+</html>

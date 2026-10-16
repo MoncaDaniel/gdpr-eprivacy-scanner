@@ -18,6 +18,8 @@ dependencies = [
   "tldextract>=5.1,<6",
   "typer>=0.15,<1",
   "rich>=13.9",
+  "pyyaml>=6.0.2,<7",
+  "jinja2>=3.1.4,<4",
 ]
 
 [project.scripts]
@@ -30,6 +32,7 @@ dev = [
   "pytest-cov>=6.0",
   "ruff>=0.8",
   "mypy>=1.13",
+  "types-pyyaml>=6.0.12",
 ]
 
 [build-system]
@@ -58,7 +61,8 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S101", "S104", "PLR2004", "S311"]
+# RUF001: tests use real multilingual consent labels ("J’accepte", "×").
+"tests/**" = ["S101", "S104", "PLR2004", "S311", "RUF001"]
 
 [tool.mypy]
 python_version = "3.12"

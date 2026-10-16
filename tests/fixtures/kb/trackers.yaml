@@ -1,0 +1,14 @@
+# Test-only knowledge-base overlay: classifies the fixture world's hosts.
+vendors:
+  fixture_tracker:
+    name: Fixture Tracker
+    category: marketing
+    hosts: [tracker.test]
+  fixture_widget:
+    name: Fixture Widget
+    category: functional
+    hosts: [widget.test]
+  fixture_cmp:
+    name: Fixture CMP
+    category: consent_management
+    hosts: [cmp.test]

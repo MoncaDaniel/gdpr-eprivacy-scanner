@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+{#
+  Self-contained report page (ADR-0016): no external fonts, scripts, styles or
+  images. Wording follows ADR-0004 (verdict vocabulary); scores always
+  carry their coverage.
+#}
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'">
+<title>Privacy observation report · {{ report.scan.final_url or report.scan.normalized_url }}</title>
+<style>
+  :root {
+    --navy: #1F3A5F; --navy-dark: #152A45; --teal: #0B7285;
+    --bg: #F5F7FA; --surface: #FFFFFF; --text: #1B2430; --muted: #5B6675; --border: #DCE2E9;
+    --fail-bg: #FDECEC; --fail-fg: #9B1C1C; --fail-bd: #F2B8B8;
+    --review-bg: #FFF4E0; --review-fg: #8A4B00; --review-bd: #F5D199;
+    --pass-bg: #E8F5EC; --pass-fg: #1E6B3A; --pass-bd: #A9D8B8;
+    --na-bg: #EEF1F4; --na-fg: #4A5563; --na-bd: #CBD3DC;
+    --error-bg: #F3ECFA; --error-fg: #5B2B86; --error-bd: #D5C2EA;
+    --radius: 10px;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    --serif: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.55 var(--sans); }
+  a { color: var(--teal); text-underline-offset: 2px; }
+  h1, h2, h3 { font-family: var(--serif); color: var(--navy); line-height: 1.25; margin: 0; }
+  h1 { font-size: 1.6rem; }
+  h2 { font-size: 1.3rem; margin-bottom: 12px; }
+  h3 { font-size: 1.05rem; }
+  code, .mono { font-family: var(--mono); font-size: 0.86em; word-break: break-all; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+  header.top { background: var(--navy-dark); color: #E9EEF5; padding: 28px 0 24px; }
+  header.top h1 { color: #FFFFFF; }
+  header.top .eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: .75rem; color: #9FB3CC; margin-bottom: 6px; }
+  header.top .target { font-family: var(--mono); font-size: .95rem; margin-top: 8px; word-break: break-all; color: #FFFFFF; }
+  header.top .meta { margin-top: 8px; font-size: .85rem; color: #B9C7D8; }
+  .disclaimer { background: #FFFFFF; border-left: 4px solid var(--teal); border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 12px 16px; margin: 20px 0; font-size: .9rem; color: var(--muted); }
+  section { margin: 28px 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+  .grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 760px) { .grid.two { grid-template-columns: 1fr 1fr; } }
+  .score .label { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .score .value { font-family: var(--serif); font-size: 2.4rem; color: var(--navy); line-height: 1.1; margin: 4px 0; }
+  .score .value small { font-size: 1rem; color: var(--muted); }
+  .score .coverage { font-size: .9rem; }
+  .score .breakdown { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .meter { height: 6px; background: var(--na-bg); border-radius: 3px; overflow: hidden; margin-top: 8px; }
+  .meter span { display: block; height: 100%; background: var(--teal); }
+  .badge { display: inline-flex; align-items: center; gap: 4px; border: 1px solid; border-radius: 999px;
+    padding: 1px 10px; font-size: .78rem; font-weight: 600; white-space: nowrap; }
+  .v-fail { background: var(--fail-bg); color: var(--fail-fg); border-color: var(--fail-bd); }
+  .v-manual_review { background: var(--review-bg); color: var(--review-fg); border-color: var(--review-bd); }
+  .v-pass { background: var(--pass-bg); color: var(--pass-fg); border-color: var(--pass-bd); }
+  .v-not_applicable { background: var(--na-bg); color: var(--na-fg); border-color: var(--na-bd); }
+  .v-error { background: var(--error-bg); color: var(--error-fg); border-color: var(--error-bd); }
+  .tag { display: inline-block; border: 1px solid var(--border); border-radius: 4px; padding: 0 6px;
+    font-size: .74rem; color: var(--muted); background: #FAFBFC; white-space: nowrap; }
+  .tag.jur { color: var(--teal); border-color: #A9D3DA; }
+  figure { margin: 0; }
+  figure img { width: 100%; height: auto; border: 1px solid var(--border); border-radius: 6px; display: block; }
+  figcaption { font-size: .82rem; color: var(--muted); margin-top: 6px; }
+  details.finding { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; }
+  details.finding[open] { box-shadow: 0 1px 2px rgba(21,42,69,.06); }
+  details.finding > summary { list-style: none; cursor: pointer; padding: 14px 16px; display: grid;
+    grid-template-columns: auto 1fr; gap: 4px 12px; align-items: start; }
+  details.finding > summary::-webkit-details-marker { display: none; }
+  details.finding > summary .rid { font-family: var(--mono); font-size: .8rem; color: var(--muted); padding-top: 3px; }
+  details.finding > summary .ttl { font-weight: 600; }
+  details.finding > summary .chips { grid-column: 2; display: flex; flex-wrap: wrap; gap: 6px; }
+  details.finding > summary:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; border-radius: var(--radius); }
+  .fbody { padding: 0 16px 16px; border-top: 1px solid var(--border); }
+  .fbody p { margin: 12px 0; }
+  .fbody h4 { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 16px 0 6px; }
+  .refs { margin: 0; padding-left: 18px; }
+  .refs li { margin-bottom: 4px; }
+  .hint { background: #F1F7F8; border-radius: 6px; padding: 8px 12px; font-size: .92rem; }
+  .prompt { background: var(--review-bg); border-radius: 6px; padding: 8px 12px; font-size: .92rem; }
+  .ev { border: 1px solid var(--border); border-radius: 6px; margin-bottom: 8px; overflow: hidden; }
+  .ev .evh { background: #FAFBFC; padding: 6px 10px; font-weight: 600; font-size: .9rem; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .ev dl { margin: 0; padding: 6px 10px; display: grid; grid-template-columns: 1fr; gap: 0 12px; font-size: .86rem; }
+  .ev dt { color: var(--muted); }
+  .ev dd { margin: 0 0 6px; word-break: break-word; }
+  @media (min-width: 640px) {
+    .ev dl { grid-template-columns: 170px 1fr; }
+    .ev dd { margin: 0 0 4px; }
+  }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: .86rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: #FAFBFC; color: var(--muted); font-weight: 600; white-space: nowrap; }
+  tr:last-child td { border-bottom: 0; }
+  td.nowrap { white-space: nowrap; }
+  ul.plain { margin: 0; padding-left: 18px; }
+  ul.plain li { margin-bottom: 6px; }
+  .counts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .muted { color: var(--muted); }
+  .small { font-size: .85rem; }
+  footer { border-top: 1px solid var(--border); padding: 20px 0 40px; font-size: .82rem; color: var(--muted); }
+  @media print {
+    body { background: #FFFFFF; font-size: 11pt; }
+    header.top { background: #FFFFFF; color: var(--text); border-bottom: 2px solid var(--navy); }
+    header.top h1, header.top .target { color: var(--navy); }
+    header.top .meta, header.top .eyebrow { color: var(--muted); }
+    details.finding, .card, .ev, .table-wrap { break-inside: avoid; box-shadow: none; }
+    .table-wrap { overflow: visible; }
+    a { color: var(--text); }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Website privacy observation report · ePrivacy &amp; GDPR</div>
+    <h1>{{ report.scan.page_title or "Scanned page" }}</h1>
+    <div class="target">{{ report.scan.final_url or report.scan.normalized_url }}</div>
+    <div class="meta">
+      Observed {{ report.scan.evidence_created_at | utc }} · from {{ report.environment.vantage_point }}
+      · {{ report.environment.locale }} · rule catalog v{{ report.catalog.version }} (law as of {{ report.catalog.law_as_of.isoformat() }})
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="disclaimer" role="note"><strong>Not legal advice.</strong> {{ report.disclaimer }}</p>
+
+  {% if report.scan.outcome.value != "completed" %}
+  <section class="card v-error" role="alert">
+    <h2>Results unavailable</h2>
+    <p>The page could not be observed: {{ report.scan.outcome_detail or report.scan.outcome.value | humanize }}.
+      No score is given and automated checks are marked "Could not be evaluated".</p>
+  </section>
+  {% endif %}
+
+  <section aria-labelledby="scores">
+    <h2 id="scores">Website Privacy Exposure Score</h2>
+    <div class="grid two">
+      {% for s in report.scores %}
+      <div class="card score">
+        <div class="label">{{ s.title }}</div>
+        {% if s.score is not none %}
+        <div class="value">{{ s.score }}<small> / 100</small></div>
+        <div class="meter" aria-hidden="true"><span style="width: {{ s.score }}%"></span></div>
+        {% else %}
+        <div class="value">Not scored</div>
+        {% endif %}
+        <div class="coverage"><strong>{{ s.coverage_label | capitalize }}</strong>.</div>
+        <div class="breakdown small">
+          {% if s.failed %}<span class="badge v-fail">{{ s.failed }} issue{{ "s" if s.failed != 1 }}</span>{% endif %}
+          {% if s.passed %}<span class="badge v-pass">{{ s.passed }} no issue</span>{% endif %}
+          {% if s.manual_review %}<span class="badge v-manual_review">{{ s.manual_review }} review</span>{% endif %}
+          {% if s.not_applicable %}<span class="badge v-not_applicable">{{ s.not_applicable }} n/a</span>{% endif %}
+          {% if s.errors %}<span class="badge v-error">{{ s.errors }} not evaluated</span>{% endif %}
+          {% if s.not_yet_evaluated %}<span class="tag">{{ s.not_yet_evaluated }} not yet in this version</span>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <p class="small muted">Score = severity-weighted share of checks with no issue detected (high 5, medium 3, low 1),
+      among checks that produced "Issue detected" or "No issue detected". Checks needing review, not applicable,
+      not evaluated or not yet implemented are excluded and shown separately. The score covers only what can be
+      observed from outside, so it is not a measure of overall legal conformity.</p>
+  </section>
+
+  <section aria-labelledby="first-screen">
+    <h2 id="first-screen">What a first-time visitor sees</h2>
+    <div class="grid two">
+      {% if screenshot_uri %}
+      <figure class="card">
+        <img src="{{ screenshot_uri }}" alt="Screenshot of the first screen of {{ report.scan.final_url or report.scan.normalized_url }} before any interaction">
+        <figcaption>First screen, before any interaction ({{ report.environment.viewport.width }}×{{ report.environment.viewport.height }} viewport).</figcaption>
+      </figure>
+      {% endif %}
+      <div class="card">
+        {% set c = report.classification %}
+        <h3>Before any consent</h3>
+        <ul class="plain small" style="margin-top:10px">
+          <li><strong>{{ c.cookies | length }}</strong> cookie{{ "s" if c.cookies | length != 1 }} stored</li>
+          <li><strong>{{ c.storage | length }}</strong> Web Storage key{{ "s" if c.storage | length != 1 }} written</li>
+          <li><strong>{{ c.third_parties | map(attribute="site") | unique | list | length }}</strong> third-party site(s) contacted</li>
+          <li>Consent interface:
+            {% if not c.banner_evidence_captured %}not captured in this evidence
+            {% elif c.banner %}{{ c.banner.cmp or "detected (platform not identified)" }}, detection confidence {{ c.banner.confidence.value }}
+            {% else %}none detected{% endif %}</li>
+          <li>Consent platforms recognised: {{ c.cmps | map(attribute="name") | join(", ") or "none" }}</li>
+          <li>Observed for {{ report.scan.observation_window_ms | seconds }} after load, with no clicks or scrolling</li>
+        </ul>
+        <div class="counts">
+          {% for v in [Verdict.FAIL, Verdict.MANUAL_REVIEW, Verdict.PASS, Verdict.NOT_APPLICABLE, Verdict.ERROR] %}
+          {% if counts[v] %}<span class="badge v-{{ v.value }}">{{ counts[v] }} · {{ v.label }}</span>{% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="findings">
+    <h2 id="findings">Findings</h2>
+    {% for f in findings %}
+    <details class="finding" id="{{ f.rule_id }}"{% if expand_all or f.verdict in (Verdict.FAIL, Verdict.MANUAL_REVIEW) %} open{% endif %}>
+      <summary>
+        <span class="rid">{{ f.rule_id }}</span>
+        <span class="ttl">{{ f.title }}</span>
+        <span class="chips">
+          <span class="badge v-{{ f.verdict.value }}">{{ f.verdict_label }}</span>
+          {% if f.review_reason %}<span class="tag">{{ f.review_reason.label }}</span>{% endif %}
+          <span class="tag">Severity {{ f.severity.value }}</span>
+          <span class="tag">Confidence {{ f.confidence.value }}</span>
+          <span class="tag">Tier {{ f.tier.value }}</span>
+        </span>
+      </summary>
+      <div class="fbody">
+        <p>{{ f.explanation }}</p>
+        {% if f.review_prompt %}<p class="prompt"><strong>What to review:</strong> {{ f.review_prompt }}</p>{% endif %}
+        {% if f.remediation_hint %}<p class="hint"><strong>Hint:</strong> {{ f.remediation_hint }}</p>{% endif %}
+
+        <h4>Legal basis</h4>
+        <ul class="refs">
+          {% for l in f.legal_basis %}
+          <li><a href="{{ l.url }}" rel="noopener noreferrer">{{ l.instrument }}, {{ l.provision }}</a> <span class="tag">binding</span></li>
+          {% endfor %}
+        </ul>
+        {% if f.guidance %}
+        <h4>Interpretation</h4>
+        <ul class="refs">
+          {% for g in f.guidance %}
+          <li>
+            {% if g.url %}<a href="{{ g.url }}" rel="noopener noreferrer">{{ g.authority }}: {{ g.document }}</a>{% else %}{{ g.authority }}: {{ g.document }}{% endif %}{% if g.pinpoint %}, {{ g.pinpoint }}{% endif %}
+            <span class="tag jur">{{ g.jurisdiction }}</span>
+            <span class="tag">{{ "binding" if g.binding else "non-binding" }} {{ g.kind | humanize }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if f.evidence %}
+        <h4>Evidence ({{ f.evidence | length }})</h4>
+        {% for e in f.evidence %}
+        <div class="ev">
+          <div class="evh"><span class="tag">{{ e.kind.value | humanize }}</span> <span class="mono">{{ e.label }}</span></div>
+          <dl>
+            {% for k, v in e.details %}<dt>{{ k }}</dt><dd>{% if k == "Source" and v.startswith("https://") %}<a href="{{ v }}" rel="noopener noreferrer">{{ v }}</a>{% else %}{{ v }}{% endif %}</dd>{% endfor %}
+          </dl>
+        </div>
+        {% endfor %}
+        {% endif %}
+        <p class="small muted">Rule {{ f.rule_id }} v{{ f.rule_version }}.</p>
+      </div>
+    </details>
+    {% endfor %}
+  </section>
+
+  {% if report.not_yet_evaluated %}
+  <section aria-labelledby="planned">
+    <h2 id="planned">Not yet evaluated by this version</h2>
+    <p class="small muted">These catalogued checks are counted in coverage but not run yet. No conclusion is implied.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Check</th><th>Regulation</th><th>Topic</th></tr></thead>
+        <tbody>
+        {% for p in report.not_yet_evaluated %}
+          <tr><td class="nowrap mono">{{ p.rule_id }}</td><td class="nowrap">{{ "GDPR" if p.regulation.value == "gdpr" else "ePrivacy" }}</td><td>{{ p.title }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  {% endif %}
+
+  <section aria-labelledby="manual">
+    <h2 id="manual">Always requires manual review</h2>
+    <p class="small muted">Obligations no website scan can establish. Listed for completeness; never scored.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Topic</th><th>Provision</th><th>Why it cannot be observed</th></tr></thead>
+        <tbody>
+        {% for m in report.manual_review_items %}
+          <tr><td>{{ m.topic }}</td><td>{{ m.provision }}</td><td>{{ m.reason }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  {% set c = report.classification %}
+  <section aria-labelledby="inventory">
+    <h2 id="inventory">Observed inventory (before consent)</h2>
+    <h3 style="margin:16px 0 8px">Cookies ({{ c.cookies | length }})</h3>
+    {% if c.cookies %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Domain</th><th>Party</th><th>Category</th><th>Vendor</th><th>Lifetime</th><th>Classified by</th></tr></thead>
+        <tbody>
+        {% for k in c.cookies %}
+          <tr><td class="mono">{{ k.name }}</td><td class="mono">{{ k.domain }}</td><td>{{ k.party.value }}</td>
+            <td>{{ k.match.category.value | humanize }}</td><td>{{ k.match.vendor or "—" }}</td>
+            <td class="nowrap">{{ k.lifetime_seconds | lifetime }}</td><td>{{ k.match.source.value | humanize }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<p class="muted small">None.</p>{% endif %}
+
+    <h3 style="margin:20px 0 8px">Third-party sites ({{ c.third_parties | length }})</h3>
+    {% if c.third_parties %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Site</th><th>Vendor</th><th>Category</th><th>Requests</th><th>First at</th><th>Types</th></tr></thead>
+        <tbody>
+        {% for t in c.third_parties %}
+          <tr><td class="mono">{{ t.site }}</td><td>{{ t.match.vendor or "—" }}</td><td>{{ t.match.category.value | humanize }}</td>
+            <td>{{ t.request_count - t.blocked_count }}</td><td class="nowrap">{{ t.first_request_ms | seconds }}</td><td>{{ t.resource_types | join(", ") }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<p class="muted small">None.</p>{% endif %}
+
+    <h3 style="margin:20px 0 8px">Web Storage ({{ c.storage | length }})</h3>
+    {% if c.storage %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Key</th><th>Origin</th><th>Area</th><th>Category</th><th>Vendor</th></tr></thead>
+        <tbody>
+        {% for s in c.storage %}
+          <tr><td class="mono">{{ s.key }}</td><td class="mono">{{ s.origin }}</td><td>{{ s.area.value }}</td>
+            <td>{{ s.match.category.value | humanize }}</td><td>{{ s.match.vendor or "—" }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<p class="muted small">None.</p>{% endif %}
+    <p class="small muted">Stored values are never recorded; only their length and a per-scan keyed fingerprint are kept.</p>
+  </section>
+
+  <section aria-labelledby="method">
+    <h2 id="method">Method and reproducibility</h2>
+    <div class="grid two">
+      <div class="card small">
+        <h3>Scan</h3>
+        <ul class="plain" style="margin-top:8px">
+          <li>Address submitted: <span class="mono">{{ report.scan.input_url }}</span></li>
+          <li>Final address: <span class="mono">{{ report.scan.final_url or "—" }}</span>{% if report.scan.http_status %} (HTTP {{ report.scan.http_status }}){% endif %}</li>
+          <li>Sessions: {{ report.scan.sessions_executed | map(attribute="value") | join(", ") }}</li>
+          <li>Outcome: {{ report.scan.outcome.value }}</li>
+          <li>Scan ID: <span class="mono">{{ report.scan.scan_id }}</span></li>
+          <li>Evidence collected {{ report.scan.evidence_created_at | utc }} (schema {{ report.scan.evidence_schema_version }}, scanner {{ report.scan.scanner_version }})</li>
+          <li>Report generated {{ report.generated_at | utc }} (generator {{ report.generator_version }})</li>
+        </ul>
+      </div>
+      <div class="card small">
+        <h3>Environment and rule set</h3>
+        <ul class="plain" style="margin-top:8px">
+          <li>Vantage point: {{ report.environment.vantage_point }}</li>
+          <li>Browser: {{ report.environment.engine }} {{ report.environment.engine_version }}{% if report.environment.headless %} (headless){% endif %}</li>
+          <li>Locale {{ report.environment.locale }}, time zone {{ report.environment.timezone }}, Accept-Language <span class="mono">{{ report.environment.accept_language }}</span></li>
+          <li>Viewport {{ report.environment.viewport.width }}×{{ report.environment.viewport.height }}</li>
+          <li>Rule catalog v{{ report.catalog.version }}, SHA-256 <span class="mono">{{ report.catalog.sha256 | short_hash }}…</span>, law as of {{ report.catalog.law_as_of.isoformat() }}</li>
+          <li>Knowledge base {{ report.knowledge_base.version }}, SHA-256 <span class="mono">{{ report.knowledge_base.sha256 | short_hash }}…</span>; Open Cookie Database @ <span class="mono">{{ report.knowledge_base.open_cookie_database_commit | short_hash }}</span> (Apache-2.0)</li>
+        </ul>
+      </div>
+    </div>
+    <h3 style="margin:20px 0 8px">Limitations</h3>
+    <ul class="plain small">
+      {% for l in report.limitations %}<li>{{ l }}</li>{% endfor %}
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    {{ report.disclaimer }}
+    Report schema {{ report.report_schema_version }}. This page loads no external resources.
+  </div>
+</footer>
+</body>
+</html>
